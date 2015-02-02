@@ -17,6 +17,10 @@
  ***************************************************************************
 */
 
+#ifdef __CHEERP__
+#include <cheerp/clientlib.h>
+#endif
+
 #define _CRT_SECURE_NO_WARNINGS 1
 #ifdef WIN32
 #include <Windows.h>
@@ -74,7 +78,12 @@
 static double secs;
 
 #ifndef WIN32
-
+#ifdef __CHEERP__
+double mysecond()
+{
+	return client::Date::now()/1000;
+}
+#else
 double mysecond()
 {
         struct timeval tp;
@@ -84,6 +93,7 @@ double mysecond()
         i = gettimeofday(&tp,&tzp);
         return ( (double) tp.tv_sec + (double) tp.tv_usec * 1.e-6 );
 }
+#endif
 #else
 
 double mysecond()

@@ -189,7 +189,7 @@ process(sys.argv[1])
       ret.append(self.filename + '.mem')
     return ret
 
-CHEERP_BIN = '/opt/cheerp/bin/'
+CHEERP_BIN = os.getenv('CHEERP_BIN', '/opt/cheerp/bin')
 
 class CheerpBenchmarker(Benchmarker):
   def __init__(self, name, engine, args=[OPTIMIZATIONS], binaryen_opts=[]):
@@ -200,7 +200,7 @@ class CheerpBenchmarker(Benchmarker):
 
   def build(self, parent, filename, args, shared_args, emcc_args, native_args, native_exec, lib_builder, has_output_parser):
     suffix = filename.split('.')[-1]
-    cheerp_temp = filename + '.cheerp.' + suffix
+    cheerp_temp = filename[:-len(suffix)-1] + '.cheerp.' + suffix
     code = open(filename).read()
     if 'int main()' in code:
       main_args = ''
@@ -224,28 +224,49 @@ class CheerpBenchmarker(Benchmarker):
       'code': code,
       'main_args': main_args
     })
+
     cheerp_args = [
-      '-target', 'cheerp', '-cheerp-mode=wasm',
+      '-target', 'cheerp',
     ]
+
+    if 'asmjs' in self.name:
+        mode = 'asmjs'
+    elif 'wasm' in self.name:
+        mode = 'wasm'
+    else:
+        mode = 'genericjs'
+
+    cheerp_args += ['-cheerp-mode=' + mode]
+
     self.parent = parent
     if lib_builder:
       # build as "native" (so no emcc env stuff), but with all the cheerp stuff
       # set in the env
       cheerp_args = cheerp_args + lib_builder(self.name, native=True, env_init={
-        'CC': CHEERP_BIN + 'clang',
-        'CXX': CHEERP_BIN + 'clang++',
-        'AR': CHEERP_BIN + 'llvm-ar',
-        'LD': CHEERP_BIN + 'clang',
-        'NM': CHEERP_BIN + 'llvm-nm',
-        'LDSHARED': CHEERP_BIN + 'clang',
-        'RANLIB': CHEERP_BIN + 'llvm-ranlib',
-        'CFLAGS': '-target cheerp -cheerp-mode=wasm',
-        'CXXFLAGS': '-target cheerp -cheerp-mode=wasm',
+        'CC': CHEERP_BIN + '/clang',
+        'CXX': CHEERP_BIN + '/clang++',
+        'AR': CHEERP_BIN + '/llvm-ar',
+        'LD': CHEERP_BIN + '/clang',
+        'NM': CHEERP_BIN + '/llvm-nm',
+        'LDSHARED': CHEERP_BIN + '/clang',
+        'RANLIB': CHEERP_BIN + '/llvm-ranlib',
+        'CFLAGS': ' '.join(cheerp_args),
+        'CXXFLAGS': ' '.join(cheerp_args),
       })
     final = os.path.dirname(filename) + os.path.sep + 'cheerp_' + self.name + ('_' if self.name else '') + os.path.basename(filename) + '.js'
     final = final.replace('.cpp', '')
     try_delete(final)
     dirs_to_delete = []
+
+    self.filename = final
+
+    if mode == 'wasm':
+        cheerp_args += ['-cheerp-wasm-loader=' + final]
+        final = final.replace('.js', '.wasm')
+
+    if mode in ['wasm', 'asmjs']:
+        cheerp_args += ['-cheerp-linear-heap-size=256']
+
     try:
       for arg in cheerp_args[:]:
         if arg.endswith('.a'):
@@ -254,19 +275,16 @@ class CheerpBenchmarker(Benchmarker):
           dirs_to_delete += [info['dir']]
       cheerp_args = [arg for arg in cheerp_args if not arg.endswith('.a')]
       #print(cheerp_args)
-      cmd = [CHEERP_BIN + 'clang++'] + cheerp_args + [
-        '-cheerp-linear-heap-size=256',
-        '-cheerp-wasm-loader=' + final,
+      cmd = [CHEERP_BIN + '/clang++'] + cheerp_args + [
         cheerp_temp,
         '-Wno-writable-strings', # for how we set up webMain
-        '-o', final + '.wasm'
+        '-o', final
       ] + shared_args
       #print(' '.join(cmd))
       subprocess.check_call(cmd)
-      self.filename = final
       Building.get_binaryen()
       if self.binaryen_opts:
-        run_binaryen_opts(final + '.wasm', self.binaryen_opts)
+        run_binaryen_opts(final, self.binaryen_opts)
     finally:
       for dir_ in dirs_to_delete:
         try_delete(dir_)
@@ -275,7 +293,10 @@ class CheerpBenchmarker(Benchmarker):
     return run_js(self.filename, engine=self.engine, args=args, stderr=PIPE, full_output=True, assert_returncode=None)
 
   def get_output_files(self):
-    return [self.filename, self.filename + '.wasm']
+    files = [self.filename]
+    if 'wasm' in self.name:
+        files += [self.filename.replace('.js', '.wasm')]
+    return files
 
   def handle_static_lib(self, f):
     try:
@@ -331,6 +352,7 @@ try:
   ]
   if SPIDERMONKEY_ENGINE and Building.which(SPIDERMONKEY_ENGINE[0]):
     benchmarkers += [
+      EmscriptenBenchmarker('sm', SPIDERMONKEY_ENGINE, []),
       EmscriptenBenchmarker('sm-asmjs', SPIDERMONKEY_ENGINE, ['-s', 'PRECISE_F32=2']),
       #EmscriptenBenchmarker('sm-simd',  SPIDERMONKEY_ENGINE, ['-s', 'SIMD=1']),
       EmscriptenBenchmarker('sm-asm2wasm',  SPIDERMONKEY_ENGINE + ['--no-wasm-baseline'], ['-s', 'WASM=1']),
@@ -338,10 +360,18 @@ try:
       #  'LLVM': '/home/alon/Dev/llvm/build/bin',
       #  'EMCC_WASM_BACKEND': '1',
       #}),
+      CheerpBenchmarker('sm', SPIDERMONKEY_ENGINE),
+      CheerpBenchmarker('sm-asmjs',  SPIDERMONKEY_ENGINE),
+      CheerpBenchmarker('sm-wasm',  SPIDERMONKEY_ENGINE + ['--no-wasm-baseline']),
     ]
   if V8_ENGINE and Building.which(V8_ENGINE[0]):
     benchmarkers += [
-      EmscriptenBenchmarker('v8-wasm',  V8_ENGINE,           ['-s', 'WASM=1']),
+      #EmscriptenBenchmarker('v8', V8_ENGINE, []),
+      EmscriptenBenchmarker('v8-asmjs', V8_ENGINE, ['-s', 'PRECISE_F32=2']),
+      #EmscriptenBenchmarker('v8-wasm',  V8_ENGINE,           ['-s', 'WASM=1']),
+      CheerpBenchmarker('v8', V8_ENGINE),
+      CheerpBenchmarker('v8-asmjs',  V8_ENGINE),
+      CheerpBenchmarker('v8-wasm',  V8_ENGINE),
     ]
   if os.path.exists(CHEERP_BIN):
     benchmarkers += [
