@@ -44,8 +44,7 @@ public:
 		{
 			(void)body0;
 			(void)body1;
-			void* mem = ci.m_dispatcher1->allocateCollisionAlgorithm(sizeof(btEmptyAlgorithm));
-			return new(mem) btEmptyAlgorithm(ci);
+			return new btEmptyAlgorithm(ci);
 		}
 	};
 

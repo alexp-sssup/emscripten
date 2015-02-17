@@ -67,8 +67,7 @@ public:
 	{
 		virtual	btCollisionAlgorithm* CreateCollisionAlgorithm(btCollisionAlgorithmConstructionInfo& ci, btCollisionObject* body0,btCollisionObject* body1)
 		{
-			void* mem = ci.m_dispatcher1->allocateCollisionAlgorithm(sizeof(btCompoundCollisionAlgorithm));
-			return new(mem) btCompoundCollisionAlgorithm(ci,body0,body1,false);
+			return new btCompoundCollisionAlgorithm(ci,body0,body1,false);
 		}
 	};
 
@@ -76,8 +75,7 @@ public:
 	{
 		virtual	btCollisionAlgorithm* CreateCollisionAlgorithm(btCollisionAlgorithmConstructionInfo& ci, btCollisionObject* body0,btCollisionObject* body1)
 		{
-			void* mem = ci.m_dispatcher1->allocateCollisionAlgorithm(sizeof(btCompoundCollisionAlgorithm));
-			return new(mem) btCompoundCollisionAlgorithm(ci,body0,body1,true);
+			return new btCompoundCollisionAlgorithm(ci,body0,body1,true);
 		}
 	};
 

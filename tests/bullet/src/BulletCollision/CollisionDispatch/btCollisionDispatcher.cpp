@@ -85,7 +85,7 @@ btPersistentManifold*	btCollisionDispatcher::getNewManifold(void* b0,void* b1)
 
 	btScalar contactProcessingThreshold = btMin(body0->getContactProcessingThreshold(),body1->getContactProcessingThreshold());
 		
-	void* mem = 0;
+	/*void* mem = 0;
 	
 	if (m_persistentManifoldPoolAllocator->getFreeCount())
 	{
@@ -102,8 +102,8 @@ btPersistentManifold*	btCollisionDispatcher::getNewManifold(void* b0,void* b1)
 			//make sure to increase the m_defaultMaxPersistentManifoldPoolSize in the btDefaultCollisionConstructionInfo/btDefaultCollisionConfiguration
 			return 0;
 		}
-	}
-	btPersistentManifold* manifold = new(mem) btPersistentManifold (body0,body1,0,contactBreakingThreshold,contactProcessingThreshold);
+	}*/
+	btPersistentManifold* manifold = new btPersistentManifold (body0,body1,0,contactBreakingThreshold,contactProcessingThreshold);
 	manifold->m_index1a = m_manifoldsPtr.size();
 	m_manifoldsPtr.push_back(manifold);
 
@@ -131,10 +131,10 @@ void btCollisionDispatcher::releaseManifold(btPersistentManifold* manifold)
 	m_manifoldsPtr.pop_back();
 
 	manifold->~btPersistentManifold();
-	if (m_persistentManifoldPoolAllocator->validPtr(manifold))
+	/*if (m_persistentManifoldPoolAllocator->validPtr(manifold))
 	{
 		m_persistentManifoldPoolAllocator->freeMemory(manifold);
-	} else
+	} else*/
 	{
 		btAlignedFree(manifold);
 	}

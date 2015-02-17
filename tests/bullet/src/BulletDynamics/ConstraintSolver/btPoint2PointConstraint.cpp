@@ -103,15 +103,15 @@ void btPoint2PointConstraint::getInfo2NonVirtual (btConstraintInfo2* info, const
 	// anchor points in global coordinates with respect to body PORs.
    
     // set jacobian
-    info->m_J1linearAxis[0] = 1;
-	info->m_J1linearAxis[info->rowskip+1] = 1;
-	info->m_J1linearAxis[2*info->rowskip+2] = 1;
+    (*info->m_J1linearAxis[0])[0] = 1;
+	(*info->m_J1linearAxis[1])[1] = 1;
+	(*info->m_J1linearAxis[2])[2] = 1;
 
 	btVector3 a1 = body0_trans.getBasis()*getPivotInA();
 	{
-		btVector3* angular0 = (btVector3*)(info->m_J1angularAxis);
-		btVector3* angular1 = (btVector3*)(info->m_J1angularAxis+info->rowskip);
-		btVector3* angular2 = (btVector3*)(info->m_J1angularAxis+2*info->rowskip);
+		btVector3* angular0 = info->m_J1angularAxis[0];
+		btVector3* angular1 = info->m_J1angularAxis[1];
+		btVector3* angular2 = info->m_J1angularAxis[2];
 		btVector3 a1neg = -a1;
 		a1neg.getSkewSymmetricMatrix(angular0,angular1,angular2);
 	}
@@ -125,9 +125,9 @@ void btPoint2PointConstraint::getInfo2NonVirtual (btConstraintInfo2* info, const
    
 	{
 		btVector3 a2n = -a2;
-		btVector3* angular0 = (btVector3*)(info->m_J2angularAxis);
-		btVector3* angular1 = (btVector3*)(info->m_J2angularAxis+info->rowskip);
-		btVector3* angular2 = (btVector3*)(info->m_J2angularAxis+2*info->rowskip);
+		btVector3* angular0 = info->m_J2angularAxis[0];
+		btVector3* angular1 = info->m_J2angularAxis[1];
+		btVector3* angular2 = info->m_J2angularAxis[2];
 		a2.getSkewSymmetricMatrix(angular0,angular1,angular2);
 	}
     
@@ -139,14 +139,14 @@ void btPoint2PointConstraint::getInfo2NonVirtual (btConstraintInfo2* info, const
     int j;
 	for (j=0; j<3; j++)
     {
-        info->m_constraintError[j*info->rowskip] = k * (a2[j] + body1_trans.getOrigin()[j] - a1[j] - body0_trans.getOrigin()[j]);
+        *info->m_constraintError[j] = k * (a2[j] + body1_trans.getOrigin()[j] - a1[j] - body0_trans.getOrigin()[j]);
 		//printf("info->m_constraintError[%d]=%f\n",j,info->m_constraintError[j]);
     }
 	if(m_flags & BT_P2P_FLAGS_CFM)
 	{
 		for (j=0; j<3; j++)
 		{
-			info->cfm[j*info->rowskip] = m_cfm;
+			*info->cfm[j] = m_cfm;
 		}
 	}
 
@@ -155,8 +155,8 @@ void btPoint2PointConstraint::getInfo2NonVirtual (btConstraintInfo2* info, const
     {
 		if (m_setting.m_impulseClamp > 0)
 		{
-			info->m_lowerLimit[j*info->rowskip] = -impulseClamp;
-			info->m_upperLimit[j*info->rowskip] = impulseClamp;
+			*info->m_lowerLimit[j] = -impulseClamp;
+			*info->m_upperLimit[j] = impulseClamp;
 		}
 	}
 	info->m_damping = m_setting.m_damping;

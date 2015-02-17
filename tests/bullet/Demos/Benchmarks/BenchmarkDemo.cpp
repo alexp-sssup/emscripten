@@ -413,6 +413,7 @@ void	BenchmarkDemo::initPhysics()
 			btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
 			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,groundShape,localInertia);
 			btRigidBody* body = new btRigidBody(rbInfo);
+			m_rigidBodies.push_back(body);
 
 			//add the body to the dynamics world
 			m_dynamicsWorld->addRigidBody(body);
@@ -996,6 +997,14 @@ void	BenchmarkDemo::createTest4()
 	}
 }
 
+void BenchmarkDemo::dump()
+{
+	for(int j=0;j<m_rigidBodies.size();j++)
+	{
+		const btTransform& trans=m_rigidBodies[j]->getWorldTransform();
+		printf("%.2f\n%.2f\n%.2f\n",float(trans.getOrigin().getX()),float(trans.getOrigin().getY()),float(trans.getOrigin().getZ()));
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // LargeMesh
@@ -1322,6 +1331,7 @@ btRigidBody*	DemoApplication::localCreateRigidBody(float mass, const btTransform
 	body->setWorldTransform(startTransform);
 	body->setContactProcessingThreshold(m_defaultContactProcessingThreshold);
 	m_dynamicsWorld->addRigidBody(body);
+	m_rigidBodies.push_back(body);
 
 	return body;
 }

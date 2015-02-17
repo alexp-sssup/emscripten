@@ -55,8 +55,7 @@ public:
 	{
 		virtual	btCollisionAlgorithm* CreateCollisionAlgorithm(btCollisionAlgorithmConstructionInfo& ci, btCollisionObject* body0,btCollisionObject* body1)
 		{
-			void* mem = ci.m_dispatcher1->allocateCollisionAlgorithm(sizeof(btSphereSphereCollisionAlgorithm));
-			return new(mem) btSphereSphereCollisionAlgorithm(0,ci,body0,body1);
+			return new btSphereSphereCollisionAlgorithm(0,ci,body0,body1);
 		}
 	};
 

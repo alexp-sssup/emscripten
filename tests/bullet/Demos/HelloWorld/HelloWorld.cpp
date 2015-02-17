@@ -19,7 +19,11 @@ subject to the following restrictions:
 
 /// This is a Hello World program for running a basic Bullet physics simulation
 
+#ifdef __CHEERP__
+void webMain()
+#else
 int main(int argc, char** argv)
+#endif
 {
 
 	int i;

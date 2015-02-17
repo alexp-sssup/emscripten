@@ -461,6 +461,7 @@ public:
 	/////Calculate space needed to store BVH for serialization
 	unsigned calculateSerializeBufferSize() const;
 
+#if 0
 	/// Data buffer MUST be 16 byte aligned
 	virtual bool serialize(void *o_alignedDataBuffer, unsigned i_dataBufferSize, bool i_swapEndian) const;
 
@@ -479,6 +480,7 @@ public:
 	virtual	void deSerializeFloat(struct btQuantizedBvhFloatData& quantizedBvhFloatData);
 
 	virtual	void deSerializeDouble(struct btQuantizedBvhDoubleData& quantizedBvhDoubleData);
+#endif
 
 
 ////////////////////////////////////////////////////////////////////
@@ -569,10 +571,12 @@ struct	btQuantizedBvhDoubleData
 };
 
 
+#if 0
 SIMD_FORCE_INLINE	int	btQuantizedBvh::calculateSerializeBufferSizeNew() const
 {
 	return sizeof(btQuantizedBvhData);
 }
+#endif
 
 
 

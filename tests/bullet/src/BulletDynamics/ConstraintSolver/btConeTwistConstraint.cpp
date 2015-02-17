@@ -125,22 +125,22 @@ void btConeTwistConstraint::getInfo2NonVirtual (btConstraintInfo2* info,const bt
 	
 	btAssert(!m_useSolveConstraintObsolete);
     // set jacobian
-    info->m_J1linearAxis[0] = 1;
-    info->m_J1linearAxis[info->rowskip+1] = 1;
-    info->m_J1linearAxis[2*info->rowskip+2] = 1;
+    (*info->m_J1linearAxis[0])[0] = 1;
+    (*info->m_J1linearAxis[1])[1] = 1;
+    (*info->m_J1linearAxis[2])[2] = 1;
 	btVector3 a1 = transA.getBasis() * m_rbAFrame.getOrigin();
 	{
-		btVector3* angular0 = (btVector3*)(info->m_J1angularAxis);
-		btVector3* angular1 = (btVector3*)(info->m_J1angularAxis+info->rowskip);
-		btVector3* angular2 = (btVector3*)(info->m_J1angularAxis+2*info->rowskip);
+		btVector3* angular0(info->m_J1angularAxis[0]);
+		btVector3* angular1(info->m_J1angularAxis[1]);
+		btVector3* angular2(info->m_J1angularAxis[2]);
 		btVector3 a1neg = -a1;
 		a1neg.getSkewSymmetricMatrix(angular0,angular1,angular2);
 	}
 	btVector3 a2 = transB.getBasis() * m_rbBFrame.getOrigin();
 	{
-		btVector3* angular0 = (btVector3*)(info->m_J2angularAxis);
-		btVector3* angular1 = (btVector3*)(info->m_J2angularAxis+info->rowskip);
-		btVector3* angular2 = (btVector3*)(info->m_J2angularAxis+2*info->rowskip);
+		btVector3* angular0(info->m_J2angularAxis[0]);
+		btVector3* angular1(info->m_J2angularAxis[1]);
+		btVector3* angular2(info->m_J2angularAxis[2]);
 		a2.getSkewSymmetricMatrix(angular0,angular1,angular2);
 	}
     // set right hand side
@@ -149,108 +149,108 @@ void btConeTwistConstraint::getInfo2NonVirtual (btConstraintInfo2* info,const bt
     int j;
 	for (j=0; j<3; j++)
     {
-        info->m_constraintError[j*info->rowskip] = k * (a2[j] + transB.getOrigin()[j] - a1[j] - transA.getOrigin()[j]);
-		info->m_lowerLimit[j*info->rowskip] = -SIMD_INFINITY;
-		info->m_upperLimit[j*info->rowskip] = SIMD_INFINITY;
+        *info->m_constraintError[j] = k * (a2[j] + transB.getOrigin()[j] - a1[j] - transA.getOrigin()[j]);
+		*info->m_lowerLimit[j] = -SIMD_INFINITY;
+		*info->m_upperLimit[j] = SIMD_INFINITY;
 		if(m_flags & BT_CONETWIST_FLAGS_LIN_CFM)
 		{
-			info->cfm[j*info->rowskip] = m_linCFM;
+			*info->cfm[j] = m_linCFM;
 		}
     }
 	int row = 3;
-    int srow = row * info->rowskip;
+    int srow = row;
 	btVector3 ax1;
 	// angular limits
 	if(m_solveSwingLimit)
 	{
-		btScalar *J1 = info->m_J1angularAxis;
-		btScalar *J2 = info->m_J2angularAxis;
+		btVector3 **J1 = info->m_J1angularAxis;
+		btVector3 **J2 = info->m_J2angularAxis;
 		if((m_swingSpan1 < m_fixThresh) && (m_swingSpan2 < m_fixThresh))
 		{
 			btTransform trA = transA*m_rbAFrame;
 			btVector3 p = trA.getBasis().getColumn(1);
 			btVector3 q = trA.getBasis().getColumn(2);
-			int srow1 = srow + info->rowskip;
-			J1[srow+0] = p[0];
-			J1[srow+1] = p[1];
-			J1[srow+2] = p[2];
-			J1[srow1+0] = q[0];
-			J1[srow1+1] = q[1];
-			J1[srow1+2] = q[2];
-			J2[srow+0] = -p[0];
-			J2[srow+1] = -p[1];
-			J2[srow+2] = -p[2];
-			J2[srow1+0] = -q[0];
-			J2[srow1+1] = -q[1];
-			J2[srow1+2] = -q[2];
+			int srow1 = srow + 1;
+			(*J1[srow])[0] = p[0];
+			(*J1[srow])[1] = p[1];
+			(*J1[srow])[2] = p[2];
+			(*J1[srow1])[0] = q[0];
+			(*J1[srow1])[1] = q[1];
+			(*J1[srow1])[2] = q[2];
+			(*J2[srow])[0] = -p[0];
+			(*J2[srow])[1] = -p[1];
+			(*J2[srow])[2] = -p[2];
+			(*J2[srow1])[0] = -q[0];
+			(*J2[srow1])[1] = -q[1];
+			(*J2[srow1])[2] = -q[2];
 			btScalar fact = info->fps * m_relaxationFactor;
-			info->m_constraintError[srow] =   fact * m_swingAxis.dot(p);
-			info->m_constraintError[srow1] =  fact * m_swingAxis.dot(q);
-			info->m_lowerLimit[srow] = -SIMD_INFINITY;
-			info->m_upperLimit[srow] = SIMD_INFINITY;
-			info->m_lowerLimit[srow1] = -SIMD_INFINITY;
-			info->m_upperLimit[srow1] = SIMD_INFINITY;
-			srow = srow1 + info->rowskip;
+			*info->m_constraintError[srow] =   fact * m_swingAxis.dot(p);
+			*info->m_constraintError[srow1] =  fact * m_swingAxis.dot(q);
+			*info->m_lowerLimit[srow] = -SIMD_INFINITY;
+			*info->m_upperLimit[srow] = SIMD_INFINITY;
+			*info->m_lowerLimit[srow1] = -SIMD_INFINITY;
+			*info->m_upperLimit[srow1] = SIMD_INFINITY;
+			srow = srow1 + 1;
 		}
 		else
 		{
 			ax1 = m_swingAxis * m_relaxationFactor * m_relaxationFactor;
-			J1[srow+0] = ax1[0];
-			J1[srow+1] = ax1[1];
-			J1[srow+2] = ax1[2];
-			J2[srow+0] = -ax1[0];
-			J2[srow+1] = -ax1[1];
-			J2[srow+2] = -ax1[2];
+			(*J1[srow])[0] = ax1[0];
+			(*J1[srow])[1] = ax1[1];
+			(*J1[srow])[2] = ax1[2];
+			(*J2[srow])[0] = -ax1[0];
+			(*J2[srow])[1] = -ax1[1];
+			(*J2[srow])[2] = -ax1[2];
 			btScalar k = info->fps * m_biasFactor;
 
-			info->m_constraintError[srow] = k * m_swingCorrection;
+			*info->m_constraintError[srow] = k * m_swingCorrection;
 			if(m_flags & BT_CONETWIST_FLAGS_ANG_CFM)
 			{
-				info->cfm[srow] = m_angCFM;
+				*info->cfm[srow] = m_angCFM;
 			}
 			// m_swingCorrection is always positive or 0
-			info->m_lowerLimit[srow] = 0;
-			info->m_upperLimit[srow] = SIMD_INFINITY;
-			srow += info->rowskip;
+			*info->m_lowerLimit[srow] = 0;
+			*info->m_upperLimit[srow] = SIMD_INFINITY;
+			srow += 1;
 		}
 	}
 	if(m_solveTwistLimit)
 	{
 		ax1 = m_twistAxis * m_relaxationFactor * m_relaxationFactor;
-		btScalar *J1 = info->m_J1angularAxis;
-		btScalar *J2 = info->m_J2angularAxis;
-		J1[srow+0] = ax1[0];
-		J1[srow+1] = ax1[1];
-		J1[srow+2] = ax1[2];
-		J2[srow+0] = -ax1[0];
-		J2[srow+1] = -ax1[1];
-		J2[srow+2] = -ax1[2];
+		btVector3 **J1 = info->m_J1angularAxis;
+		btVector3 **J2 = info->m_J2angularAxis;
+		(*J1[srow])[0] = ax1[0];
+		(*J1[srow])[1] = ax1[1];
+		(*J1[srow])[2] = ax1[2];
+		(*J2[srow])[0] = -ax1[0];
+		(*J2[srow])[1] = -ax1[1];
+		(*J2[srow])[2] = -ax1[2];
 		btScalar k = info->fps * m_biasFactor;
-		info->m_constraintError[srow] = k * m_twistCorrection;
+		*info->m_constraintError[srow] = k * m_twistCorrection;
 		if(m_flags & BT_CONETWIST_FLAGS_ANG_CFM)
 		{
-			info->cfm[srow] = m_angCFM;
+			*info->cfm[srow] = m_angCFM;
 		}
 		if(m_twistSpan > 0.0f)
 		{
 
 			if(m_twistCorrection > 0.0f)
 			{
-				info->m_lowerLimit[srow] = 0;
-				info->m_upperLimit[srow] = SIMD_INFINITY;
+				*info->m_lowerLimit[srow] = 0;
+				*info->m_upperLimit[srow] = SIMD_INFINITY;
 			} 
 			else
 			{
-				info->m_lowerLimit[srow] = -SIMD_INFINITY;
-				info->m_upperLimit[srow] = 0;
+				*info->m_lowerLimit[srow] = -SIMD_INFINITY;
+				*info->m_upperLimit[srow] = 0;
 			} 
 		}
 		else
 		{
-			info->m_lowerLimit[srow] = -SIMD_INFINITY;
-			info->m_upperLimit[srow] = SIMD_INFINITY;
+			*info->m_lowerLimit[srow] = -SIMD_INFINITY;
+			*info->m_upperLimit[srow] = SIMD_INFINITY;
 		}
-		srow += info->rowskip;
+		srow += 1;
 	}
 }
 	

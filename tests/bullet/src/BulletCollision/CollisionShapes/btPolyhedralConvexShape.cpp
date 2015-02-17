@@ -37,8 +37,7 @@ bool	btPolyhedralConvexShape::initializePolyhedralFeatures()
 	if (m_polyhedron)
 		btAlignedFree(m_polyhedron);
 	
-	void* mem = btAlignedAlloc(sizeof(btConvexPolyhedron),16);
-	m_polyhedron = new (mem) btConvexPolyhedron;
+	m_polyhedron = new btConvexPolyhedron;
 
 	btAlignedObjectArray<btVector3> tmpVertices;
 	for (int i=0;i<getNumVertices();i++)

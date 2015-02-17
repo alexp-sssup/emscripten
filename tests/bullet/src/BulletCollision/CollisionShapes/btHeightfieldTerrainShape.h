@@ -83,12 +83,11 @@ protected:
 	btScalar m_width;
 	btScalar m_length;
 	btScalar m_heightScale;
-	union
+	struct
 	{
 		unsigned char*	m_heightfieldDataUnsignedChar;
 		short*		m_heightfieldDataShort;
 		btScalar*			m_heightfieldDataFloat;
-		void*			m_heightfieldDataUnknown;
 	};
 
 	PHY_ScalarType	m_heightDataType;	

@@ -41,6 +41,7 @@ protected:
 
 	btDynamicsWorld* m_dynamicsWorld;
 	btScalar	m_defaultContactProcessingThreshold;
+	btAlignedObjectArray<btRigidBody*> m_rigidBodies;
 
 public:
 	DemoApplication()
@@ -135,6 +136,7 @@ class BenchmarkDemo : public PlatformDemoApplication
 
 	virtual void displayCallback();
 	
+	void dump();
 
 
 	

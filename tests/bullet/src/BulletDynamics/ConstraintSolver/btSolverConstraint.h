@@ -45,29 +45,20 @@ ATTRIBUTE_ALIGNED64 (struct)	btSolverConstraint
 	
 	btScalar	m_friction;
 	btScalar	m_jacDiagABInv;
-	union
-	{
-		int	m_numConsecutiveRowsPerKernel;
-		btScalar	m_unusedPadding0;
-	};
-
-	union
-	{
-		int			m_frictionIndex;
-		btScalar	m_unusedPadding1;
-	};
-	union
+	int	m_numConsecutiveRowsPerKernel;
+	int			m_frictionIndex;
+	struct
 	{
 		btRigidBody*	m_solverBodyA;
 		int				m_companionIdA;
 	};
-	union
+	struct
 	{
 		btRigidBody*	m_solverBodyB;
 		int				m_companionIdB;
 	};
 	
-	union
+	struct
 	{
 		void*		m_originalContactPoint;
 		btScalar	m_unusedPadding4;

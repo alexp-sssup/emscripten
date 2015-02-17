@@ -54,8 +54,7 @@ m_ownsBvh(false)
 
 	if (buildBvh)
 	{
-		void* mem = btAlignedAlloc(sizeof(btOptimizedBvh),16);
-		m_bvh = new (mem) btOptimizedBvh();
+		m_bvh = new btOptimizedBvh();
 		
 		m_bvh->build(meshInterface,m_useQuantizedAabbCompression,bvhAabbMin,bvhAabbMax);
 		m_ownsBvh = true;
@@ -345,8 +344,7 @@ void   btBvhTriangleMeshShape::buildOptimizedBvh()
 		btAlignedFree(m_bvh);
 	}
 	///m_localAabbMin/m_localAabbMax is already re-calculated in btTriangleMeshShape. We could just scale aabb, but this needs some more work
-	void* mem = btAlignedAlloc(sizeof(btOptimizedBvh),16);
-	m_bvh = new(mem) btOptimizedBvh();
+	m_bvh = new btOptimizedBvh();
 	//rebuild the bvh...
 	m_bvh->build(m_meshInterface,m_useQuantizedAabbCompression,m_localAabbMin,m_localAabbMax);
 	m_ownsBvh = true;
@@ -368,6 +366,7 @@ void   btBvhTriangleMeshShape::setOptimizedBvh(btOptimizedBvh* bvh, const btVect
 
 
 
+#if 0
 ///fills the dataBuffer and returns the struct name (and 0 on failure)
 const char*	btBvhTriangleMeshShape::serialize(void* dataBuffer, btSerializer* serializer) const
 {
@@ -461,6 +460,6 @@ void	btBvhTriangleMeshShape::serializeSingleTriangleInfoMap(btSerializer* serial
 	}
 }
 
-
+#endif
 
 

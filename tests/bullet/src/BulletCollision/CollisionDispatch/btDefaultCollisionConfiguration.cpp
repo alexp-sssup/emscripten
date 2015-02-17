@@ -32,8 +32,8 @@ subject to the following restrictions:
 
 
 
-#include "LinearMath/btStackAlloc.h"
 #include "LinearMath/btPoolAllocator.h"
+#include "LinearMath/btStackAlloc.h"
 
 
 
@@ -43,57 +43,40 @@ btDefaultCollisionConfiguration::btDefaultCollisionConfiguration(const btDefault
 //btDefaultCollisionConfiguration::btDefaultCollisionConfiguration(btStackAlloc*	stackAlloc,btPoolAllocator*	persistentManifoldPool,btPoolAllocator*	collisionAlgorithmPool)
 {
 
-	void* mem = btAlignedAlloc(sizeof(btVoronoiSimplexSolver),16);
-	m_simplexSolver = new (mem)btVoronoiSimplexSolver();
+	m_simplexSolver = new btVoronoiSimplexSolver();
 
 	if (constructionInfo.m_useEpaPenetrationAlgorithm)
 	{
-		mem = btAlignedAlloc(sizeof(btGjkEpaPenetrationDepthSolver),16);
-		m_pdSolver = new (mem)btGjkEpaPenetrationDepthSolver;
+		m_pdSolver = new btGjkEpaPenetrationDepthSolver;
 	}else
 	{
-		mem = btAlignedAlloc(sizeof(btMinkowskiPenetrationDepthSolver),16);
-		m_pdSolver = new (mem)btMinkowskiPenetrationDepthSolver;
+		m_pdSolver = new btMinkowskiPenetrationDepthSolver;
 	}
 	
 	//default CreationFunctions, filling the m_doubleDispatch table
-	mem = btAlignedAlloc(sizeof(btConvexConvexAlgorithm::CreateFunc),16);
-	m_convexConvexCreateFunc = new(mem) btConvexConvexAlgorithm::CreateFunc(m_simplexSolver,m_pdSolver);
-	mem = btAlignedAlloc(sizeof(btConvexConcaveCollisionAlgorithm::CreateFunc),16);
-	m_convexConcaveCreateFunc = new (mem)btConvexConcaveCollisionAlgorithm::CreateFunc;
-	mem = btAlignedAlloc(sizeof(btConvexConcaveCollisionAlgorithm::CreateFunc),16);
-	m_swappedConvexConcaveCreateFunc = new (mem)btConvexConcaveCollisionAlgorithm::SwappedCreateFunc;
-	mem = btAlignedAlloc(sizeof(btCompoundCollisionAlgorithm::CreateFunc),16);
-	m_compoundCreateFunc = new (mem)btCompoundCollisionAlgorithm::CreateFunc;
-	mem = btAlignedAlloc(sizeof(btCompoundCollisionAlgorithm::SwappedCreateFunc),16);
-	m_swappedCompoundCreateFunc = new (mem)btCompoundCollisionAlgorithm::SwappedCreateFunc;
-	mem = btAlignedAlloc(sizeof(btEmptyAlgorithm::CreateFunc),16);
-	m_emptyCreateFunc = new(mem) btEmptyAlgorithm::CreateFunc;
+	m_convexConvexCreateFunc = new btConvexConvexAlgorithm::CreateFunc(m_simplexSolver,m_pdSolver);
+	m_convexConcaveCreateFunc = new btConvexConcaveCollisionAlgorithm::CreateFunc;
+	m_swappedConvexConcaveCreateFunc = new btConvexConcaveCollisionAlgorithm::SwappedCreateFunc;
+	m_compoundCreateFunc = new btCompoundCollisionAlgorithm::CreateFunc;
+	m_swappedCompoundCreateFunc = new btCompoundCollisionAlgorithm::SwappedCreateFunc;
+	m_emptyCreateFunc = new btEmptyAlgorithm::CreateFunc;
 	
-	mem = btAlignedAlloc(sizeof(btSphereSphereCollisionAlgorithm::CreateFunc),16);
-	m_sphereSphereCF = new(mem) btSphereSphereCollisionAlgorithm::CreateFunc;
+	m_sphereSphereCF = new btSphereSphereCollisionAlgorithm::CreateFunc;
 #ifdef USE_BUGGY_SPHERE_BOX_ALGORITHM
-	mem = btAlignedAlloc(sizeof(btSphereBoxCollisionAlgorithm::CreateFunc),16);
-	m_sphereBoxCF = new(mem) btSphereBoxCollisionAlgorithm::CreateFunc;
-	mem = btAlignedAlloc(sizeof(btSphereBoxCollisionAlgorithm::CreateFunc),16);
-	m_boxSphereCF = new (mem)btSphereBoxCollisionAlgorithm::CreateFunc;
+	m_sphereBoxCF = new btSphereBoxCollisionAlgorithm::CreateFunc;
+	m_boxSphereCF = new btSphereBoxCollisionAlgorithm::CreateFunc;
 	m_boxSphereCF->m_swapped = true;
 #endif //USE_BUGGY_SPHERE_BOX_ALGORITHM
 
-	mem = btAlignedAlloc(sizeof(btSphereTriangleCollisionAlgorithm::CreateFunc),16);
-	m_sphereTriangleCF = new (mem)btSphereTriangleCollisionAlgorithm::CreateFunc;
-	mem = btAlignedAlloc(sizeof(btSphereTriangleCollisionAlgorithm::CreateFunc),16);
-	m_triangleSphereCF = new (mem)btSphereTriangleCollisionAlgorithm::CreateFunc;
+	m_sphereTriangleCF = new btSphereTriangleCollisionAlgorithm::CreateFunc;
+	m_triangleSphereCF = new btSphereTriangleCollisionAlgorithm::CreateFunc;
 	m_triangleSphereCF->m_swapped = true;
 	
-	mem = btAlignedAlloc(sizeof(btBoxBoxCollisionAlgorithm::CreateFunc),16);
-	m_boxBoxCF = new(mem)btBoxBoxCollisionAlgorithm::CreateFunc;
+	m_boxBoxCF = new btBoxBoxCollisionAlgorithm::CreateFunc;
 
 	//convex versus plane
-	mem = btAlignedAlloc (sizeof(btConvexPlaneCollisionAlgorithm::CreateFunc),16);
-	m_convexPlaneCF = new (mem) btConvexPlaneCollisionAlgorithm::CreateFunc;
-	mem = btAlignedAlloc (sizeof(btConvexPlaneCollisionAlgorithm::CreateFunc),16);
-	m_planeConvexCF = new (mem) btConvexPlaneCollisionAlgorithm::CreateFunc;
+	m_convexPlaneCF = new btConvexPlaneCollisionAlgorithm::CreateFunc;
+	m_planeConvexCF = new btConvexPlaneCollisionAlgorithm::CreateFunc;
 	m_planeConvexCF->m_swapped = true;
 	
 	///calculate maximum element size, big enough to fit any collision algorithm in the memory pool
@@ -112,9 +95,8 @@ btDefaultCollisionConfiguration::btDefaultCollisionConfiguration(const btDefault
 		this->m_stackAlloc = constructionInfo.m_stackAlloc;
 	} else
 	{
-		m_ownsStackAllocator = true;
-		void* mem = btAlignedAlloc(sizeof(btStackAlloc),16);
-		m_stackAlloc = new(mem)btStackAlloc(constructionInfo.m_defaultStackAllocatorSize);
+		m_ownsStackAllocator = false;
+		m_stackAlloc = NULL;
 	}
 		
 	if (constructionInfo.m_persistentManifoldPool)
@@ -124,8 +106,7 @@ btDefaultCollisionConfiguration::btDefaultCollisionConfiguration(const btDefault
 	} else
 	{
 		m_ownsPersistentManifoldPool = true;
-		void* mem = btAlignedAlloc(sizeof(btPoolAllocator),16);
-		m_persistentManifoldPool = new (mem) btPoolAllocator(sizeof(btPersistentManifold),constructionInfo.m_defaultMaxPersistentManifoldPoolSize);
+		m_persistentManifoldPool = NULL;
 	}
 	
 	if (constructionInfo.m_collisionAlgorithmPool)
@@ -135,8 +116,7 @@ btDefaultCollisionConfiguration::btDefaultCollisionConfiguration(const btDefault
 	} else
 	{
 		m_ownsCollisionAlgorithmPool = true;
-		void* mem = btAlignedAlloc(sizeof(btPoolAllocator),16);
-		m_collisionAlgorithmPool = new(mem) btPoolAllocator(collisionAlgorithmMaxElementSize,constructionInfo.m_defaultMaxCollisionAlgorithmPoolSize);
+		m_collisionAlgorithmPool = NULL;
 	}
 
 
@@ -147,67 +127,45 @@ btDefaultCollisionConfiguration::~btDefaultCollisionConfiguration()
 	if (m_ownsStackAllocator)
 	{
 		m_stackAlloc->destroy();
-		m_stackAlloc->~btStackAlloc();
-		btAlignedFree(m_stackAlloc);
+		delete m_stackAlloc;
 	}
 	if (m_ownsCollisionAlgorithmPool)
 	{
-		m_collisionAlgorithmPool->~btPoolAllocator();
-		btAlignedFree(m_collisionAlgorithmPool);
+		delete m_collisionAlgorithmPool;
 	}
 	if (m_ownsPersistentManifoldPool)
 	{
-		m_persistentManifoldPool->~btPoolAllocator();
-		btAlignedFree(m_persistentManifoldPool);
+		delete m_persistentManifoldPool;
 	}
 
-	m_convexConvexCreateFunc->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree(	m_convexConvexCreateFunc);
+	delete m_convexConvexCreateFunc;
 
-	m_convexConcaveCreateFunc->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_convexConcaveCreateFunc);
-	m_swappedConvexConcaveCreateFunc->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_swappedConvexConcaveCreateFunc);
+	delete m_convexConcaveCreateFunc;
+	delete m_swappedConvexConcaveCreateFunc;
 
-	m_compoundCreateFunc->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_compoundCreateFunc);
+	delete m_compoundCreateFunc;
 
-	m_swappedCompoundCreateFunc->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_swappedCompoundCreateFunc);
+	delete m_swappedCompoundCreateFunc;
 
-	m_emptyCreateFunc->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_emptyCreateFunc);
+	delete m_emptyCreateFunc;
 
-	m_sphereSphereCF->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_sphereSphereCF);
+	delete m_sphereSphereCF;
 
 #ifdef USE_BUGGY_SPHERE_BOX_ALGORITHM
-	m_sphereBoxCF->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_sphereBoxCF);
-	m_boxSphereCF->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_boxSphereCF);
+	delete m_sphereBoxCF;
+	delete m_boxSphereCF;
 #endif //USE_BUGGY_SPHERE_BOX_ALGORITHM
 
-	m_sphereTriangleCF->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_sphereTriangleCF);
-	m_triangleSphereCF->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_triangleSphereCF);
-	m_boxBoxCF->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_boxBoxCF);
+	delete m_sphereTriangleCF;
+	delete m_triangleSphereCF;
+	delete m_boxBoxCF;
 
-	m_convexPlaneCF->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_convexPlaneCF);
-	m_planeConvexCF->~btCollisionAlgorithmCreateFunc();
-	btAlignedFree( m_planeConvexCF);
+	delete m_convexPlaneCF;
+	delete m_planeConvexCF;
 
-	m_simplexSolver->~btVoronoiSimplexSolver();
-	btAlignedFree(m_simplexSolver);
+	delete m_simplexSolver;
 
-	m_pdSolver->~btConvexPenetrationDepthSolver();
-	
-	btAlignedFree(m_pdSolver);
-
-
+	delete m_pdSolver;
 }
 
 

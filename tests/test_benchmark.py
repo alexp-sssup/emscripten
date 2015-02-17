@@ -927,16 +927,19 @@ class benchmark(RunnerCore):
                       output_parser=output_parser, args_processor=args_processor)
 
   def test_zzz_lua_scimark(self):
+    if CORE_BENCHMARKS: return
     def output_parser(output):
       return 100.0/float(re.search('\nSciMark +([\d\.]+) ', output).group(1))
 
     self.lua('scimark', '[small problem sizes]', output_parser=output_parser)
 
   def test_zzz_lua_binarytrees(self):
+    if CORE_BENCHMARKS: return
     # js version: ['binarytrees.lua', {0: 0, 1: 9.5, 2: 11.99, 3: 12.85, 4: 14.72, 5: 15.82}[arguments[0]]]
     self.lua('binarytrees', 'long lived tree of depth')
 
   def test_zzz_zlib(self):
+    if CORE_BENCHMARKS: return
     src = open(path_from_root('tests', 'zlib', 'benchmark.c'), 'r').read()
     def lib_builder(name, native, env_init, archive_extension, target_configure_args):
       return self.get_library('zlib', os.path.join('libz.'+archive_extension), make_args=['libz.'+archive_extension], native=native, cache_name_extra=name+archive_extension, env_init=env_init)
@@ -944,6 +947,7 @@ class benchmark(RunnerCore):
                       force_c=True, shared_args=['-I' + path_from_root('tests', 'zlib')], lib_builder=lib_builder)
 
   def test_zzz_box2d(self): # Called thus so it runs late in the alphabetical cycle... it is long
+    if CORE_BENCHMARKS: return
     src = open(path_from_root('tests', 'box2d', 'Benchmark.cpp'), 'r').read()
     def lib_builder(name, native, env_init, archive_extension, target_configure_args):
       return self.get_library('box2d', [os.path.join('box2d.'+archive_extension)], configure=None, make_args=['box2d.'+archive_extension], native=native, cache_name_extra=name+archive_extension, env_init=env_init)

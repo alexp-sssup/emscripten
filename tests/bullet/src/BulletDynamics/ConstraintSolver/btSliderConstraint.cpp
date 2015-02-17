@@ -267,7 +267,7 @@ btVector3 btSliderConstraint::getAncorInB(void)
 
 void btSliderConstraint::getInfo2NonVirtual(btConstraintInfo2* info, const btTransform& transA,const btTransform& transB, const btVector3& linVelA,const btVector3& linVelB, btScalar rbAinvMass,btScalar rbBinvMass  )
 {
-	const btTransform& trA = getCalculatedTransformA();
+	/*const btTransform& trA = getCalculatedTransformA();
 	const btTransform& trB = getCalculatedTransformB();
 	
 	btAssert(!m_useSolveConstraintObsolete);
@@ -694,7 +694,7 @@ void btSliderConstraint::getInfo2NonVirtual(btConstraintInfo2* info, const btTra
 			}
 			info->m_constraintError[srow] *= getSoftnessLimAng();
 		} // if(limit)
-	} // if angular limit or powered
+	} // if angular limit or powered*/
 }
 
 

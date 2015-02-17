@@ -30,9 +30,7 @@ m_localScaling(btScalar(1.),btScalar(1.),btScalar(1.))
 
 	if (enableDynamicAabbTree)
 	{
-		void* mem = btAlignedAlloc(sizeof(btDbvt),16);
-		m_dynamicAabbTree = new(mem) btDbvt();
-		btAssert(mem==m_dynamicAabbTree);
+		m_dynamicAabbTree = new btDbvt();
 	}
 }
 
@@ -299,9 +297,7 @@ void btCompoundShape::createAabbTreeFromChildren()
 {
     if ( !m_dynamicAabbTree )
     {
-        void* mem = btAlignedAlloc(sizeof(btDbvt),16);
-        m_dynamicAabbTree = new(mem) btDbvt();
-        btAssert(mem==m_dynamicAabbTree);
+        m_dynamicAabbTree = new btDbvt();
 
         for ( int index = 0; index < m_children.size(); index++ )
         {

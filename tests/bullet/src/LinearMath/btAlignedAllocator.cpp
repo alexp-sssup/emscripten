@@ -19,17 +19,23 @@ int gNumAlignedAllocs = 0;
 int gNumAlignedFree = 0;
 int gTotalBytesAlignedAllocs = 0;//detect memory leaks
 
+#ifndef __CHEERP__
 static void *btAllocDefault(size_t size)
 {
 	return malloc(size);
 }
+#endif
 
 static void btFreeDefault(void *ptr)
 {
 	free(ptr);
 }
 
+#ifndef __CHEERP__
 static btAllocFunc *sAllocFunc = btAllocDefault;
+#else
+static btAllocFunc *sAllocFunc = NULL;
+#endif
 static btFreeFunc *sFreeFunc = btFreeDefault;
 
 
@@ -90,6 +96,7 @@ static inline void btAlignedFreeDefault(void *ptr)
 static btAlignedAllocFunc *sAlignedAllocFunc = btAlignedAllocDefault;
 static btAlignedFreeFunc *sAlignedFreeFunc = btAlignedFreeDefault;
 
+#ifndef __CHEERP__
 void btAlignedAllocSetCustomAligned(btAlignedAllocFunc *allocFunc, btAlignedFreeFunc *freeFunc)
 {
   sAlignedAllocFunc = allocFunc ? allocFunc : btAlignedAllocDefault;
@@ -101,6 +108,7 @@ void btAlignedAllocSetCustom(btAllocFunc *allocFunc, btFreeFunc *freeFunc)
   sAllocFunc = allocFunc ? allocFunc : btAllocDefault;
   sFreeFunc = freeFunc ? freeFunc : btFreeDefault;
 }
+#endif
 
 #ifdef BT_DEBUG_MEMORY_ALLOCATIONS
 //this generic allocator provides the total allocated number of bytes

@@ -112,7 +112,7 @@ public:
 class btHashPtr
 {
 
-	union
+	struct
 	{
 		const void*	m_pointer;
 		int	m_hashValues[2];

@@ -55,8 +55,7 @@ public:
 		virtual	btCollisionAlgorithm* CreateCollisionAlgorithm(btCollisionAlgorithmConstructionInfo& ci, btCollisionObject* body0,btCollisionObject* body1)
 		{
 			int bbsize = sizeof(btBoxBoxCollisionAlgorithm);
-			void* ptr = ci.m_dispatcher1->allocateCollisionAlgorithm(bbsize);
-			return new(ptr) btBoxBoxCollisionAlgorithm(0,ci,body0,body1);
+			return new btBoxBoxCollisionAlgorithm(0,ci,body0,body1);
 		}
 	};
 

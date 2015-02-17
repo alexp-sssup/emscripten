@@ -143,7 +143,7 @@ inline int	btGetVersion()
 #else
 	//non-windows systems
 
-#if (defined (__APPLE__) && defined (__i386__) && (!defined (BT_USE_DOUBLE_PRECISION)))
+#if (defined (__APPLE__) && defined (__i386__) && (!defined (BT_USE_DOUBLE_PRECISION)) && !defined (__CHEERP__))
 	#define BT_USE_SSE
 	#include <emmintrin.h>
 
@@ -212,6 +212,9 @@ typedef float btScalar;
 
 
 
+#ifdef __CHEERP__
+#define BT_DECLARE_ALIGNED_ALLOCATOR()
+#else
 #define BT_DECLARE_ALIGNED_ALLOCATOR() \
    SIMD_FORCE_INLINE void* operator new(size_t sizeInBytes)   { return btAlignedAlloc(sizeInBytes,16); }   \
    SIMD_FORCE_INLINE void  operator delete(void* ptr)         { btAlignedFree(ptr); }   \
@@ -220,7 +223,8 @@ typedef float btScalar;
    SIMD_FORCE_INLINE void* operator new[](size_t sizeInBytes)   { return btAlignedAlloc(sizeInBytes,16); }   \
    SIMD_FORCE_INLINE void  operator delete[](void* ptr)         { btAlignedFree(ptr); }   \
    SIMD_FORCE_INLINE void* operator new[](size_t, void* ptr)   { return ptr; }   \
-   SIMD_FORCE_INLINE void  operator delete[](void*, void*)      { }   \
+   SIMD_FORCE_INLINE void  operator delete[](void*, void*)      { }
+#endif
 
 
 

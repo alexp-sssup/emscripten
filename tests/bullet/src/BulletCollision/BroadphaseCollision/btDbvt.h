@@ -92,7 +92,7 @@ subject to the following restrictions:
 #endif
 
 #if DBVT_USE_MEMMOVE
-#if !defined( __CELLOS_LV2__) && !defined(__MWERKS__)
+#if !defined( __CELLOS_LV2__) && !defined(__MWERKS__) && !defined(__CHEERP__)
 #include <memory.h>
 #endif
 #include <string.h>
@@ -176,7 +176,7 @@ struct	btDbvtNode
 	btDbvtNode*		parent;
 	DBVT_INLINE bool	isleaf() const		{ return(childs[1]==0); }
 	DBVT_INLINE bool	isinternal() const	{ return(!isleaf()); }
-	union
+	struct
 	{
 		btDbvtNode*	childs[2];
 		void*	data;

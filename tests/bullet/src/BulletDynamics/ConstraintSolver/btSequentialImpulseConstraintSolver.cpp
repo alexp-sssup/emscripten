@@ -838,6 +838,13 @@ btScalar btSequentialImpulseConstraintSolver::solveGroupCacheFriendlySetup(btCol
 
 					
 					int j;
+					btVector3** contactNormalArray = new btVector3*[info1.m_numConstraintRows];
+					btVector3** relpos1CrossNormalArray = new btVector3*[info1.m_numConstraintRows];
+					btVector3** relpos2CrossNormalArray = new btVector3*[info1.m_numConstraintRows];
+					btScalar** rhsArray = new btScalar*[info1.m_numConstraintRows];
+					btScalar** cfmArray = new btScalar*[info1.m_numConstraintRows];
+					btScalar** lowerLimitArray = new btScalar*[info1.m_numConstraintRows];
+					btScalar** upperLimitArray = new btScalar*[info1.m_numConstraintRows];
 					for ( j=0;j<info1.m_numConstraintRows;j++)
 					{
 						memset(&currentConstraintRow[j],0,sizeof(btSolverConstraint));
@@ -847,6 +854,13 @@ btScalar btSequentialImpulseConstraintSolver::solveGroupCacheFriendlySetup(btCol
 						currentConstraintRow[j].m_appliedPushImpulse = 0.f;
 						currentConstraintRow[j].m_solverBodyA = &rbA;
 						currentConstraintRow[j].m_solverBodyB = &rbB;
+						contactNormalArray[j] = &currentConstraintRow[j].m_contactNormal;
+						relpos1CrossNormalArray[j] = &currentConstraintRow[j].m_relpos1CrossNormal;
+						relpos2CrossNormalArray[j] = &currentConstraintRow[j].m_relpos2CrossNormal;
+						rhsArray[j] = &currentConstraintRow[j].m_rhs;
+						cfmArray[j] = &currentConstraintRow[j].m_cfm;
+						lowerLimitArray[j] = &currentConstraintRow[j].m_lowerLimit;
+						upperLimitArray[j] = &currentConstraintRow[j].m_upperLimit;
 					}
 
 					rbA.internalGetDeltaLinearVelocity().setValue(0.f,0.f,0.f);
@@ -859,19 +873,16 @@ btScalar btSequentialImpulseConstraintSolver::solveGroupCacheFriendlySetup(btCol
 					btTypedConstraint::btConstraintInfo2 info2;
 					info2.fps = 1.f/infoGlobal.m_timeStep;
 					info2.erp = infoGlobal.m_erp;
-					info2.m_J1linearAxis = currentConstraintRow->m_contactNormal;
-					info2.m_J1angularAxis = currentConstraintRow->m_relpos1CrossNormal;
+					info2.m_J1linearAxis = contactNormalArray;
+					info2.m_J1angularAxis = relpos1CrossNormalArray;
 					info2.m_J2linearAxis = 0;
-					info2.m_J2angularAxis = currentConstraintRow->m_relpos2CrossNormal;
-					info2.rowskip = sizeof(btSolverConstraint)/sizeof(btScalar);//check this
-					///the size of btSolverConstraint needs be a multiple of btScalar
-					btAssert(info2.rowskip*sizeof(btScalar)== sizeof(btSolverConstraint));
-					info2.m_constraintError = &currentConstraintRow->m_rhs;
+					info2.m_J2angularAxis = relpos2CrossNormalArray;
+					info2.m_constraintError = rhsArray;
 					currentConstraintRow->m_cfm = infoGlobal.m_globalCfm;
 					info2.m_damping = infoGlobal.m_damping;
-					info2.cfm = &currentConstraintRow->m_cfm;
-					info2.m_lowerLimit = &currentConstraintRow->m_lowerLimit;
-					info2.m_upperLimit = &currentConstraintRow->m_upperLimit;
+					info2.cfm = cfmArray;
+					info2.m_lowerLimit = lowerLimitArray;
+					info2.m_upperLimit = upperLimitArray;
 					info2.m_numIterations = infoGlobal.m_numIterations;
 					constraints[i]->getInfo2(&info2);
 
@@ -936,6 +947,13 @@ btScalar btSequentialImpulseConstraintSolver::solveGroupCacheFriendlySetup(btCol
 
 						}
 					}
+					delete[] contactNormalArray;
+					delete[] relpos1CrossNormalArray;
+					delete[] relpos2CrossNormalArray;
+					delete[] rhsArray;
+					delete[] cfmArray;
+					delete[] lowerLimitArray;
+					delete[] upperLimitArray;
 				}
 				currentRow+=m_tmpConstraintSizesPool[i].m_numConstraintRows;
 			}

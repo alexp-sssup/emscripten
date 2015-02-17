@@ -20,7 +20,7 @@ subject to the following restrictions:
 #include "btStackAlloc.h"
 #include "btHashMap.h"
 
-#if !defined( __CELLOS_LV2__) && !defined(__MWERKS__)
+#if !defined( __CELLOS_LV2__) && !defined(__MWERKS__) && !(__CHEERP__)
 #include <memory.h>
 #endif
 #include <string.h>
@@ -127,7 +127,7 @@ public:
 
 struct	btPointerUid
 {
-	union
+	struct
 	{
 		void*	m_ptr;
 		int		m_uniqueIds[2];

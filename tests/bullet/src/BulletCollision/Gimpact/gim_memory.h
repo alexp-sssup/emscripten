@@ -126,7 +126,7 @@ void gim_free(void *ptr);
 //! SIMD INTEGER SIZE
 #define SIMD_T_SIZE sizeof(SIMD_T)
 
-
+#ifndef __CHEERP__
 inline void gim_simd_memcpy(void * dst, const void * src, size_t copysize)
 {
 #ifdef GIM_SIMD_MEMORY
@@ -155,6 +155,7 @@ inline void gim_simd_memcpy(void * dst, const void * src, size_t copysize)
     memcpy(dst,src,copysize);
 #endif
 }
+#endif
 
 
 
@@ -170,10 +171,14 @@ inline void gim_swap_elements(T* _array,size_t _i,size_t _j)
 template<class T>
 inline void gim_swap_elements_memcpy(T* _array,size_t _i,size_t _j)
 {
+#ifdef __CHEERP__
+	T _e_tmp_ [[noinit]];
+#else
 	char _e_tmp_[sizeof(T)];
-	gim_simd_memcpy(_e_tmp_,&_array[_i],sizeof(T));
-	gim_simd_memcpy(&_array[_i],&_array[_j],sizeof(T));
-	gim_simd_memcpy(&_array[_j],_e_tmp_,sizeof(T));
+#endif
+	memcpy(_e_tmp_,&_array[_i],sizeof(T));
+	memcpy(&_array[_i],&_array[_j],sizeof(T));
+	memcpy(&_array[_j],_e_tmp_,sizeof(T));
 }
 
 template <int SIZE>
@@ -182,9 +187,9 @@ inline void gim_swap_elements_ptr(char * _array,size_t _i,size_t _j)
 	char _e_tmp_[SIZE];
 	_i*=SIZE;
 	_j*=SIZE;
-	gim_simd_memcpy(_e_tmp_,_array+_i,SIZE);
-	gim_simd_memcpy(_array+_i,_array+_j,SIZE);
-	gim_simd_memcpy(_array+_j,_e_tmp_,SIZE);
+	memcpy(_e_tmp_,_array+_i,SIZE);
+	memcpy(_array+_i,_array+_j,SIZE);
+	memcpy(_array+_j,_e_tmp_,SIZE);
 }
 
 #endif // GIM_MEMORY_H_INCLUDED

@@ -73,8 +73,7 @@ struct	btPhysicsSdk
 
 plPhysicsSdkHandle	plNewBulletSdk()
 {
-	void* mem = btAlignedAlloc(sizeof(btPhysicsSdk),16);
-	return (plPhysicsSdkHandle)new (mem)btPhysicsSdk;
+	return (plPhysicsSdkHandle)new btPhysicsSdk;
 }
 
 void		plDeletePhysicsSdk(plPhysicsSdkHandle	physicsSdk)
@@ -88,17 +87,12 @@ void		plDeletePhysicsSdk(plPhysicsSdkHandle	physicsSdk)
 plDynamicsWorldHandle plCreateDynamicsWorld(plPhysicsSdkHandle physicsSdkHandle)
 {
 	btPhysicsSdk* physicsSdk = reinterpret_cast<btPhysicsSdk*>(physicsSdkHandle);
-	void* mem = btAlignedAlloc(sizeof(btDefaultCollisionConfiguration),16);
-	btDefaultCollisionConfiguration* collisionConfiguration = new (mem)btDefaultCollisionConfiguration();
-	mem = btAlignedAlloc(sizeof(btCollisionDispatcher),16);
-	btDispatcher*				dispatcher = new (mem)btCollisionDispatcher(collisionConfiguration);
-	mem = btAlignedAlloc(sizeof(btAxisSweep3),16);
-	btBroadphaseInterface*		pairCache = new (mem)btAxisSweep3(physicsSdk->m_worldAabbMin,physicsSdk->m_worldAabbMax);
-	mem = btAlignedAlloc(sizeof(btSequentialImpulseConstraintSolver),16);
-	btConstraintSolver*			constraintSolver = new(mem) btSequentialImpulseConstraintSolver();
+	btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
+	btDispatcher*				dispatcher = new btCollisionDispatcher(collisionConfiguration);
+	btBroadphaseInterface*		pairCache = new btAxisSweep3(physicsSdk->m_worldAabbMin,physicsSdk->m_worldAabbMax);
+	btConstraintSolver*			constraintSolver = new btSequentialImpulseConstraintSolver();
 
-	mem = btAlignedAlloc(sizeof(btDiscreteDynamicsWorld),16);
-	return (plDynamicsWorldHandle) new (mem)btDiscreteDynamicsWorld(dispatcher,pairCache,constraintSolver,collisionConfiguration);
+	return (plDynamicsWorldHandle) new btDiscreteDynamicsWorld(dispatcher,pairCache,constraintSolver,collisionConfiguration);
 }
 void           plDeleteDynamicsWorld(plDynamicsWorldHandle world)
 {
@@ -149,7 +143,7 @@ plRigidBodyHandle plCreateRigidBody(	void* user_data,  float mass, plCollisionSh
 	}
 	void* mem = btAlignedAlloc(sizeof(btRigidBody),16);
 	btRigidBody::btRigidBodyConstructionInfo rbci(mass, 0,shape,localInertia);
-	btRigidBody* body = new (mem)btRigidBody(rbci);
+	btRigidBody* body = new btRigidBody(rbci);
 	body->setWorldTransform(trans);
 	body->setUserPointer(user_data);
 	return (plRigidBodyHandle) body;
@@ -167,15 +161,13 @@ void plDeleteRigidBody(plRigidBodyHandle cbody)
 
 plCollisionShapeHandle plNewSphereShape(plReal radius)
 {
-	void* mem = btAlignedAlloc(sizeof(btSphereShape),16);
-	return (plCollisionShapeHandle) new (mem)btSphereShape(radius);
+	return (plCollisionShapeHandle) new btSphereShape(radius);
 	
 }
 	
 plCollisionShapeHandle plNewBoxShape(plReal x, plReal y, plReal z)
 {
-	void* mem = btAlignedAlloc(sizeof(btBoxShape),16);
-	return (plCollisionShapeHandle) new (mem)btBoxShape(btVector3(x,y,z));
+	return (plCollisionShapeHandle) new btBoxShape(btVector3(x,y,z));
 }
 
 plCollisionShapeHandle plNewCapsuleShape(plReal radius, plReal height)
@@ -185,26 +177,22 @@ plCollisionShapeHandle plNewCapsuleShape(plReal radius, plReal height)
 	const int numSpheres = 2;
 	btVector3 positions[numSpheres] = {btVector3(0,height,0),btVector3(0,-height,0)};
 	btScalar radi[numSpheres] = {radius,radius};
-	void* mem = btAlignedAlloc(sizeof(btMultiSphereShape),16);
-	return (plCollisionShapeHandle) new (mem)btMultiSphereShape(positions,radi,numSpheres);
+	return (plCollisionShapeHandle) new btMultiSphereShape(positions,radi,numSpheres);
 }
 plCollisionShapeHandle plNewConeShape(plReal radius, plReal height)
 {
-	void* mem = btAlignedAlloc(sizeof(btConeShape),16);
-	return (plCollisionShapeHandle) new (mem)btConeShape(radius,height);
+	return (plCollisionShapeHandle) new btConeShape(radius,height);
 }
 
 plCollisionShapeHandle plNewCylinderShape(plReal radius, plReal height)
 {
-	void* mem = btAlignedAlloc(sizeof(btCylinderShape),16);
-	return (plCollisionShapeHandle) new (mem)btCylinderShape(btVector3(radius,height,radius));
+	return (plCollisionShapeHandle) new btCylinderShape(btVector3(radius,height,radius));
 }
 
 /* Convex Meshes */
 plCollisionShapeHandle plNewConvexHullShape()
 {
-	void* mem = btAlignedAlloc(sizeof(btConvexHullShape),16);
-	return (plCollisionShapeHandle) new (mem)btConvexHullShape();
+	return (plCollisionShapeHandle) new btConvexHullShape();
 }
 
 
@@ -216,8 +204,7 @@ plMeshInterfaceHandle		   plNewMeshInterface()
 
 plCollisionShapeHandle plNewCompoundShape()
 {
-	void* mem = btAlignedAlloc(sizeof(btCompoundShape),16);
-	return (plCollisionShapeHandle) new (mem)btCompoundShape();
+	return (plCollisionShapeHandle) new btCompoundShape();
 }
 
 void	plAddChildShape(plCollisionShapeHandle compoundShapeHandle,plCollisionShapeHandle childShapeHandle, plVector3 childPos,plQuaternion childOrn)

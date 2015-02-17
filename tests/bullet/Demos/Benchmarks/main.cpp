@@ -25,6 +25,7 @@ subject to the following restrictions:
 #define benchmarkDemo benchmarkDemo2
 #endif //USE_GRAPHICAL_BENCHMARK
 
+#define DEBUG 0
 
 #define NUM_DEMOS 7
 
@@ -68,6 +69,9 @@ int main(int argc, char **argv) {
 
 	for (d=0;d<NUM_DEMOS;d++)
 	{
+#if DEBUG
+		printf("Begin test %s\n",demoNames[d]);
+#endif
 		demoArray[d]->initPhysics();
 		
 
@@ -75,13 +79,16 @@ int main(int argc, char **argv) {
 		{
 			demoArray[d]->clientMoveAndDisplay();
 			float frameTime = CProfileManager::Get_Time_Since_Reset();
+#if DEBUG
 			if ((i % 25)==0)
 			{
 				//printf("BenchmarkDemo: %s, Frame %d, Duration (ms): %f\n",demoNames[d],i,frameTime);
+				demoArray[d]->dump();
 			}
+#endif
 			totalTime[d] += frameTime;
 			//if (i==NUM_TESTS-1)
-		//		CProfileManager::dumpAll();
+			//	CProfileManager::dumpAll();
 
 			
 		}

@@ -647,8 +647,8 @@ int btGeneric6DofConstraint::setLinearLimits(btConstraintInfo2* info, int row, c
 			limot.m_targetVelocity  = m_linearLimits.m_targetVelocity[i];
 			btVector3 axis = m_calculatedTransformA.getBasis().getColumn(i);
 			int flags = m_flags >> (i * BT_6DOF_FLAGS_AXIS_SHIFT);
-			limot.m_normalCFM	= (flags & BT_6DOF_FLAGS_CFM_NORM) ? m_linearLimits.m_normalCFM[i] : info->cfm[0];
-			limot.m_stopCFM		= (flags & BT_6DOF_FLAGS_CFM_STOP) ? m_linearLimits.m_stopCFM[i] : info->cfm[0];
+			limot.m_normalCFM	= (flags & BT_6DOF_FLAGS_CFM_NORM) ? m_linearLimits.m_normalCFM[i] : *info->cfm[0];
+			limot.m_stopCFM		= (flags & BT_6DOF_FLAGS_CFM_STOP) ? m_linearLimits.m_stopCFM[i] : *info->cfm[0];
 			limot.m_stopERP		= (flags & BT_6DOF_FLAGS_ERP_STOP) ? m_linearLimits.m_stopERP[i] : info->erp;
 			if(m_useOffsetForConstraintFrame)
 			{
@@ -671,7 +671,6 @@ int btGeneric6DofConstraint::setLinearLimits(btConstraintInfo2* info, int row, c
 }
 
 
-
 int btGeneric6DofConstraint::setAngularLimits(btConstraintInfo2 *info, int row_offset, const btTransform& transA,const btTransform& transB,const btVector3& linVelA,const btVector3& linVelB,const btVector3& angVelA,const btVector3& angVelB)
 {
 	btGeneric6DofConstraint * d6constraint = this;
@@ -685,11 +684,11 @@ int btGeneric6DofConstraint::setAngularLimits(btConstraintInfo2 *info, int row_o
 			int flags = m_flags >> ((i + 3) * BT_6DOF_FLAGS_AXIS_SHIFT);
 			if(!(flags & BT_6DOF_FLAGS_CFM_NORM))
 			{
-				m_angularLimits[i].m_normalCFM = info->cfm[0];
+				m_angularLimits[i].m_normalCFM = *info->cfm[0];
 			}
 			if(!(flags & BT_6DOF_FLAGS_CFM_STOP))
 			{
-				m_angularLimits[i].m_stopCFM = info->cfm[0];
+				m_angularLimits[i].m_stopCFM = *info->cfm[0];
 			}
 			if(!(flags & BT_6DOF_FLAGS_ERP_STOP))
 			{
@@ -781,21 +780,21 @@ int btGeneric6DofConstraint::get_limit_motor_info2(
 	const btTransform& transA,const btTransform& transB,const btVector3& linVelA,const btVector3& linVelB,const btVector3& angVelA,const btVector3& angVelB,
 	btConstraintInfo2 *info, int row, btVector3& ax1, int rotational,int rotAllowed)
 {
-    int srow = row * info->rowskip;
+    int srow = row;
     int powered = limot->m_enableMotor;
     int limit = limot->m_currentLimit;
     if (powered || limit)
     {   // if the joint is powered, or has joint limits, add in the extra row
-        btScalar *J1 = rotational ? info->m_J1angularAxis : info->m_J1linearAxis;
-        btScalar *J2 = rotational ? info->m_J2angularAxis : 0;
-        J1[srow+0] = ax1[0];
-        J1[srow+1] = ax1[1];
-        J1[srow+2] = ax1[2];
+        btVector3 **J1 = rotational ? info->m_J1angularAxis : info->m_J1linearAxis;
+        btVector3 **J2 = rotational ? info->m_J2angularAxis : 0;
+        (*J1[srow])[0] = ax1[0];
+        (*J1[srow])[1] = ax1[1];
+        (*J1[srow])[2] = ax1[2];
         if(rotational)
         {
-            J2[srow+0] = -ax1[0];
-            J2[srow+1] = -ax1[1];
-            J2[srow+2] = -ax1[2];
+            (*J2[srow])[0] = -ax1[0];
+            (*J2[srow])[1] = -ax1[1];
+            (*J2[srow])[2] = -ax1[2];
         }
         if((!rotational))
         {
@@ -827,31 +826,31 @@ int btGeneric6DofConstraint::get_limit_motor_info2(
 					tmpB *= m_factB;
 				}
 				int i;
-				for (i=0; i<3; i++) info->m_J1angularAxis[srow+i] = tmpA[i];
-				for (i=0; i<3; i++) info->m_J2angularAxis[srow+i] = -tmpB[i];
+				for (i=0; i<3; i++) ((*info->m_J1angularAxis)[srow])[i] = tmpA[i];
+				for (i=0; i<3; i++) ((*info->m_J2angularAxis)[srow])[i] = -tmpB[i];
 			} else
 			{
 				btVector3 ltd;	// Linear Torque Decoupling vector
 				btVector3 c = m_calculatedTransformB.getOrigin() - transA.getOrigin();
 				ltd = c.cross(ax1);
-				info->m_J1angularAxis[srow+0] = ltd[0];
-				info->m_J1angularAxis[srow+1] = ltd[1];
-				info->m_J1angularAxis[srow+2] = ltd[2];
+				((*info->m_J1angularAxis)[srow])[0] = ltd[0];
+				((*info->m_J1angularAxis)[srow])[1] = ltd[1];
+				((*info->m_J1angularAxis)[srow])[2] = ltd[2];
 
 				c = m_calculatedTransformB.getOrigin() - transB.getOrigin();
 				ltd = -c.cross(ax1);
-				info->m_J2angularAxis[srow+0] = ltd[0];
-				info->m_J2angularAxis[srow+1] = ltd[1];
-				info->m_J2angularAxis[srow+2] = ltd[2];
+				((*info->m_J2angularAxis)[srow])[0] = ltd[0];
+				((*info->m_J2angularAxis)[srow])[1] = ltd[1];
+				((*info->m_J2angularAxis)[srow])[2] = ltd[2];
 			}
         }
         // if we're limited low and high simultaneously, the joint motor is
         // ineffective
         if (limit && (limot->m_loLimit == limot->m_hiLimit)) powered = 0;
-        info->m_constraintError[srow] = btScalar(0.f);
+        *info->m_constraintError[srow] = btScalar(0.f);
         if (powered)
         {
-			info->cfm[srow] = limot->m_normalCFM;
+			*info->cfm[srow] = limot->m_normalCFM;
             if(!limit)
             {
 				btScalar tag_vel = rotational ? limot->m_targetVelocity : -limot->m_targetVelocity;
@@ -861,9 +860,9 @@ int btGeneric6DofConstraint::get_limit_motor_info2(
 													limot->m_hiLimit, 
 													tag_vel, 
 													info->fps * limot->m_stopERP);
-				info->m_constraintError[srow] += mot_fact * limot->m_targetVelocity;
-                info->m_lowerLimit[srow] = -limot->m_maxMotorForce;
-                info->m_upperLimit[srow] = limot->m_maxMotorForce;
+				*info->m_constraintError[srow] += mot_fact * limot->m_targetVelocity;
+                *info->m_lowerLimit[srow] = -limot->m_maxMotorForce;
+                *info->m_upperLimit[srow] = limot->m_maxMotorForce;
             }
         }
         if(limit)
@@ -871,29 +870,29 @@ int btGeneric6DofConstraint::get_limit_motor_info2(
             btScalar k = info->fps * limot->m_stopERP;
 			if(!rotational)
 			{
-				info->m_constraintError[srow] += k * limot->m_currentLimitError;
+				*info->m_constraintError[srow] += k * limot->m_currentLimitError;
 			}
 			else
 			{
-				info->m_constraintError[srow] += -k * limot->m_currentLimitError;
+				*info->m_constraintError[srow] += -k * limot->m_currentLimitError;
 			}
-			info->cfm[srow] = limot->m_stopCFM;
+			*info->cfm[srow] = limot->m_stopCFM;
             if (limot->m_loLimit == limot->m_hiLimit)
             {   // limited low and high simultaneously
-                info->m_lowerLimit[srow] = -SIMD_INFINITY;
-                info->m_upperLimit[srow] = SIMD_INFINITY;
+                *info->m_lowerLimit[srow] = -SIMD_INFINITY;
+                *info->m_upperLimit[srow] = SIMD_INFINITY;
             }
             else
             {
                 if (limit == 1)
                 {
-                    info->m_lowerLimit[srow] = 0;
-                    info->m_upperLimit[srow] = SIMD_INFINITY;
+                    *info->m_lowerLimit[srow] = 0;
+                    *info->m_upperLimit[srow] = SIMD_INFINITY;
                 }
                 else
                 {
-                    info->m_lowerLimit[srow] = -SIMD_INFINITY;
-                    info->m_upperLimit[srow] = 0;
+                    *info->m_lowerLimit[srow] = -SIMD_INFINITY;
+                    *info->m_upperLimit[srow] = 0;
                 }
                 // deal with bounce
                 if (limot->m_bounce > 0)
@@ -921,8 +920,8 @@ int btGeneric6DofConstraint::get_limit_motor_info2(
                         if (vel < 0)
                         {
                             btScalar newc = -limot->m_bounce* vel;
-                            if (newc > info->m_constraintError[srow]) 
-								info->m_constraintError[srow] = newc;
+                            if (newc > *info->m_constraintError[srow]) 
+								*info->m_constraintError[srow] = newc;
                         }
                     }
                     else
@@ -930,8 +929,8 @@ int btGeneric6DofConstraint::get_limit_motor_info2(
                         if (vel > 0)
                         {
                             btScalar newc = -limot->m_bounce * vel;
-                            if (newc < info->m_constraintError[srow]) 
-								info->m_constraintError[srow] = newc;
+                            if (newc < *info->m_constraintError[srow]) 
+								*info->m_constraintError[srow] = newc;
                         }
                     }
                 }

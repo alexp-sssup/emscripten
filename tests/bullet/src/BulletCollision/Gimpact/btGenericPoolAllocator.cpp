@@ -262,7 +262,7 @@ public:
 // global allocator
 GIM_STANDARD_ALLOCATOR g_main_allocator;
 
-
+#ifndef __CHEERP__
 void * btPoolAlloc(size_t size)
 {
 	return g_main_allocator.allocate(size);
@@ -281,3 +281,4 @@ void btPoolFree(void *ptr)
 {
 	g_main_allocator.freeMemory(ptr);
 }
+#endif

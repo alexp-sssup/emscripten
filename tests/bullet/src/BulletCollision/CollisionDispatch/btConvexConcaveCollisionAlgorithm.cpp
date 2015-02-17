@@ -123,8 +123,7 @@ void btConvexTriangleCallback::processTriangle(btVector3* triangle,int partId, i
 		}
 	
 		colAlgo->processCollision(m_convexBody,m_triBody,*m_dispatchInfoPtr,m_resultOut);
-		colAlgo->~btCollisionAlgorithm();
-		ci.m_dispatcher1->freeCollisionAlgorithm(colAlgo);
+		delete colAlgo;
 		ob->internalSetTemporaryCollisionShape( tmpShape);
 	}
 

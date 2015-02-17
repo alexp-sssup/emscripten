@@ -381,6 +381,7 @@ void	btOptimizedBvh::updateBvhNodes(btStridingMeshInterface* meshInterface,int f
 		
 }
 
+#if 0
 ///deSerializeInPlace loads and initializes a BVH from a buffer in memory 'in place'
 btOptimizedBvh* btOptimizedBvh::deSerializeInPlace(void *i_alignedDataBuffer, unsigned int i_dataBufferSize, bool i_swapEndian)
 {
@@ -389,3 +390,4 @@ btOptimizedBvh* btOptimizedBvh::deSerializeInPlace(void *i_alignedDataBuffer, un
 	//we don't add additional data so just do a static upcast
 	return static_cast<btOptimizedBvh*>(bvh);
 }
+#endif

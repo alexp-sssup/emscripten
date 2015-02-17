@@ -56,7 +56,7 @@ class btTypedConstraint : public btTypedObject
 {
 	int	m_userConstraintType;
 
-	union
+	struct
 	{
 		int	m_userConstraintId;
 		void* m_userConstraintPtr;
@@ -105,18 +105,18 @@ public:
 		// n*3 jacobian sub matrices, stored by rows. these matrices will have
 		// been initialized to 0 on entry. if the second body is zero then the
 		// J2xx pointers may be 0.
-		btScalar *m_J1linearAxis,*m_J1angularAxis,*m_J2linearAxis,*m_J2angularAxis;
+		btVector3 **m_J1linearAxis,**m_J1angularAxis,**m_J2linearAxis,**m_J2angularAxis;
 
 		// elements to jump from one row to the next in J's
-		int rowskip;
+		//int rowskip;
 
 		// right hand sides of the equation J*v = c + cfm * lambda. cfm is the
 		// "constraint force mixing" vector. c is set to zero on entry, cfm is
 		// set to a constant value (typically very small or zero) value on entry.
-		btScalar *m_constraintError,*cfm;
+		btScalar **m_constraintError,**cfm;
 
 		// lo and hi limits for variables (set to -/+ infinity on entry).
-		btScalar *m_lowerLimit,*m_upperLimit;
+		btScalar **m_lowerLimit,**m_upperLimit;
 
 		// findex vector for variables. see the LCP solver interface for a
 		// description of what this does. this is set to -1 on entry.

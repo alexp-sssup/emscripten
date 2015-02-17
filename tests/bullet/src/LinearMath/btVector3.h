@@ -79,12 +79,20 @@ public:
    * @param y Y value 
    * @param z Z value 
    */
-	SIMD_FORCE_INLINE btVector3(const btScalar& x, const btScalar& y, const btScalar& z)
+	SIMD_FORCE_INLINE btVector3(const btScalar x, const btScalar y, const btScalar z)
 	{
 		m_floats[0] = x;
 		m_floats[1] = y;
 		m_floats[2] = z;
 		m_floats[3] = btScalar(0.);
+	}
+
+	btVector3(const btScalar* p)
+	{
+		m_floats[0] = p[0];
+		m_floats[1] = p[1];
+		m_floats[2] = p[2];
+		m_floats[3] = p[3];
 	}
 
 	
@@ -107,7 +115,7 @@ public:
 	}
   /**@brief Scale the vector
    * @param s Scale factor */
-	SIMD_FORCE_INLINE btVector3& operator*=(const btScalar& s)
+	SIMD_FORCE_INLINE btVector3& operator*=(const btScalar s)
 	{
 		m_floats[0] *= s; m_floats[1] *= s;m_floats[2] *= s;
 		return *this;
@@ -115,7 +123,7 @@ public:
 
   /**@brief Inversely scale the vector 
    * @param s Scale factor to divide by */
-	SIMD_FORCE_INLINE btVector3& operator/=(const btScalar& s) 
+	SIMD_FORCE_INLINE btVector3& operator/=(const btScalar s) 
 	{
 		btFullAssert(s != btScalar(0.0));
 		return *this *= btScalar(1.0) / s;
@@ -246,7 +254,7 @@ public:
   /**@brief Return the linear interpolation between this and another vector 
    * @param v The other vector 
    * @param t The ration of this to v (t = 0 => return this, t=1 => return other) */
-	SIMD_FORCE_INLINE btVector3 lerp(const btVector3& v, const btScalar& t) const 
+	SIMD_FORCE_INLINE btVector3 lerp(const btVector3& v, const btScalar t) const 
 	{
 		return btVector3(m_floats[0] + (v.m_floats[0] - m_floats[0]) * t,
 			m_floats[1] + (v.m_floats[1] - m_floats[1]) * t,
@@ -321,7 +329,7 @@ public:
 			btSetMin(m_floats[3], other.w());
 		}
 
-		SIMD_FORCE_INLINE void 	setValue(const btScalar& x, const btScalar& y, const btScalar& z)
+		SIMD_FORCE_INLINE void 	setValue(const btScalar x, const btScalar y, const btScalar z)
 		{
 			m_floats[0]=x;
 			m_floats[1]=y;
@@ -394,21 +402,21 @@ operator-(const btVector3& v)
 
 /**@brief Return the vector scaled by s */
 SIMD_FORCE_INLINE btVector3 
-operator*(const btVector3& v, const btScalar& s)
+operator*(const btVector3& v, const btScalar s)
 {
 	return btVector3(v.m_floats[0] * s, v.m_floats[1] * s, v.m_floats[2] * s);
 }
 
 /**@brief Return the vector scaled by s */
 SIMD_FORCE_INLINE btVector3 
-operator*(const btScalar& s, const btVector3& v)
+operator*(const btScalar s, const btVector3& v)
 { 
 	return v * s; 
 }
 
 /**@brief Return the vector inversely scaled by s */
 SIMD_FORCE_INLINE btVector3
-operator/(const btVector3& v, const btScalar& s)
+operator/(const btVector3& v, const btScalar s)
 {
 	btFullAssert(s != btScalar(0.0));
 	return v * (btScalar(1.0) / s);
@@ -469,7 +477,7 @@ btTriple(const btVector3& v1, const btVector3& v2, const btVector3& v3)
  * @param v2 The other vector 
  * @param t The ration of this to v (t = 0 => return v1, t=1 => return v2) */
 SIMD_FORCE_INLINE btVector3 
-lerp(const btVector3& v1, const btVector3& v2, const btScalar& t)
+lerp(const btVector3& v1, const btVector3& v2, const btScalar t)
 {
 	return v1.lerp(v2, t);
 }
@@ -511,7 +519,7 @@ public:
 	SIMD_FORCE_INLINE btVector4() {}
 
 
-	SIMD_FORCE_INLINE btVector4(const btScalar& x, const btScalar& y, const btScalar& z,const btScalar& w) 
+	SIMD_FORCE_INLINE btVector4(const btScalar x, const btScalar y, const btScalar z,const btScalar w) 
 		: btVector3(x,y,z)
 	{
 		m_floats[3] = w;
@@ -623,7 +631,7 @@ public:
    * @param z Value of z
    * @param w Value of w
    */
-		SIMD_FORCE_INLINE void	setValue(const btScalar& x, const btScalar& y, const btScalar& z,const btScalar& w)
+		SIMD_FORCE_INLINE void	setValue(const btScalar x, const btScalar y, const btScalar z,const btScalar w)
 		{
 			m_floats[0]=x;
 			m_floats[1]=y;
@@ -636,7 +644,7 @@ public:
 
 
 ///btSwapVector3Endian swaps vector endianness, useful for network and cross-platform serialization
-SIMD_FORCE_INLINE void	btSwapScalarEndian(const btScalar& sourceVal, btScalar& destVal)
+SIMD_FORCE_INLINE void	btSwapScalarEndian(const btScalar sourceVal, btScalar destVal)
 {
 	#ifdef BT_USE_DOUBLE_PRECISION
 	unsigned char* dest = (unsigned char*) &destVal;

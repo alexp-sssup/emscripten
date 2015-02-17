@@ -67,8 +67,7 @@ m_profileTimings(0)
 {
 	if (!m_constraintSolver)
 	{
-		void* mem = btAlignedAlloc(sizeof(btSequentialImpulseConstraintSolver),16);
-		m_constraintSolver = new (mem) btSequentialImpulseConstraintSolver;
+		m_constraintSolver = new btSequentialImpulseConstraintSolver;
 		m_ownsConstraintSolver = true;
 	} else
 	{
@@ -76,8 +75,7 @@ m_profileTimings(0)
 	}
 
 	{
-		void* mem = btAlignedAlloc(sizeof(btSimulationIslandManager),16);
-		m_islandManager = new (mem) btSimulationIslandManager();
+		m_islandManager = new btSimulationIslandManager();
 	}
 
 	m_ownsIslandManager = true;
@@ -89,14 +87,11 @@ btDiscreteDynamicsWorld::~btDiscreteDynamicsWorld()
 	//only delete it when we created it
 	if (m_ownsIslandManager)
 	{
-		m_islandManager->~btSimulationIslandManager();
-		btAlignedFree( m_islandManager);
+		delete m_islandManager;
 	}
 	if (m_ownsConstraintSolver)
 	{
-
-		m_constraintSolver->~btConstraintSolver();
-		btAlignedFree(m_constraintSolver);
+		delete m_constraintSolver;
 	}
 }
 
@@ -1280,7 +1275,7 @@ void	btDiscreteDynamicsWorld::setConstraintSolver(btConstraintSolver* solver)
 {
 	if (m_ownsConstraintSolver)
 	{
-		btAlignedFree( m_constraintSolver);
+		delete m_constraintSolver;
 	}
 	m_ownsConstraintSolver = false;
 	m_constraintSolver = solver;

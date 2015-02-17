@@ -86,7 +86,7 @@ class btAlignedObjectArray
 			}
 		}
 
-		SIMD_FORCE_INLINE	void* allocate(int size)
+		SIMD_FORCE_INLINE	T* allocate(int size)
 		{
 			if (size)
 				return m_allocator.allocate(size);
@@ -450,7 +450,7 @@ class btAlignedObjectArray
 	}
 
 	//PCK: whole function
-	void initializeFromBuffer(void *buffer, int size, int capacity)
+	void initializeFromBuffer(T *buffer, int size, int capacity)
 	{
 		clear();
 		m_ownsMemory = false;

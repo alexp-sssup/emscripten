@@ -83,11 +83,19 @@ public:
 	const_pointer address   ( const_reference  ref ) const                           { return &ref; }
 	pointer       allocate  ( size_type        n   , const_pointer *      hint = 0 ) {
 		(void)hint;
-		return reinterpret_cast< pointer >(btAlignedAlloc( sizeof(value_type) * n , Alignment ));
+#ifdef __CHEERP__
+		return new value_type[n] [[noinit]];
+#else
+		return (value_type*)malloc(sizeof(value_type)*n);
+#endif
 	}
 	void          construct ( pointer          ptr , const value_type &   value    ) { new (ptr) value_type( value ); }
 	void          deallocate( pointer          ptr ) {
-		btAlignedFree( reinterpret_cast< void * >( ptr ) );
+#ifdef __CHEERP__
+		delete[] ptr;
+#else
+		free(ptr);
+#endif
 	}
 	void          destroy   ( pointer          ptr )                                 { ptr->~value_type(); }
 	

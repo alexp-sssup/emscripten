@@ -49,9 +49,9 @@ public:
 	}
 	*/
 	/** @brief Constructor with row major formatting */
-	btMatrix3x3(const btScalar& xx, const btScalar& xy, const btScalar& xz,
-		const btScalar& yx, const btScalar& yy, const btScalar& yz,
-		const btScalar& zx, const btScalar& zy, const btScalar& zz)
+	btMatrix3x3(const btScalar xx, const btScalar xy, const btScalar xz,
+		const btScalar yx, const btScalar yy, const btScalar yz,
+		const btScalar zx, const btScalar zy, const btScalar zz)
 	{ 
 		setValue(xx, xy, xz, 
 			yx, yy, yz, 
@@ -139,9 +139,9 @@ public:
 	*  @param zx Bottom Left
 	*  @param zy Bottom Middle
 	*  @param zz Bottom Right*/
-	void setValue(const btScalar& xx, const btScalar& xy, const btScalar& xz, 
-		const btScalar& yx, const btScalar& yy, const btScalar& yz, 
-		const btScalar& zx, const btScalar& zy, const btScalar& zz)
+	void setValue(const btScalar xx, const btScalar xy, const btScalar xz, 
+		const btScalar yx, const btScalar yy, const btScalar yz, 
+		const btScalar zx, const btScalar zy, const btScalar zz)
 	{
 		m_el[0].setValue(xx,xy,xz);
 		m_el[1].setValue(yx,yy,yz);
@@ -170,7 +170,7 @@ public:
 	*  @param pitch Pitch about X axis
 	*  @param roll Roll about Z axis 
 	*/
-	void setEulerYPR(const btScalar& yaw, const btScalar& pitch, const btScalar& roll) 
+	void setEulerYPR(const btScalar yaw, const btScalar pitch, const btScalar roll) 
 	{
 		setEulerZYX(roll, pitch, yaw);
 	}

@@ -37,12 +37,12 @@ static DBVT_INLINE int			indexof(const btDbvtNode* node)
 static DBVT_INLINE btDbvtVolume	merge(	const btDbvtVolume& a,
 									  const btDbvtVolume& b)
 {
-#if (DBVT_MERGE_IMPL==DBVT_IMPL_SSE)
+/*#if (DBVT_MERGE_IMPL==DBVT_IMPL_SSE)
 	ATTRIBUTE_ALIGNED16(char locals[sizeof(btDbvtAabbMm)]);
 	btDbvtVolume&	res=*(btDbvtVolume*)locals;
-#else
+#else*/
 		btDbvtVolume	res;
-#endif
+//#endif
 	Merge(a,b,res);
 	return(res);
 }
@@ -69,7 +69,7 @@ static void						getmaxdepth(const btDbvtNode* node,int depth,int& maxdepth)
 static DBVT_INLINE void			deletenode(	btDbvt* pdbvt,
 										   btDbvtNode* node)
 {
-	btAlignedFree(pdbvt->m_free);
+	delete pdbvt->m_free;
 	pdbvt->m_free=node;
 }
 
@@ -95,7 +95,7 @@ static DBVT_INLINE btDbvtNode*	createnode(	btDbvt* pdbvt,
 	if(pdbvt->m_free)
 	{ node=pdbvt->m_free;pdbvt->m_free=0; }
 	else
-	{ node=new(btAlignedAlloc(sizeof(btDbvtNode),16)) btDbvtNode(); }
+	{ node=new btDbvtNode(); }
 	node->parent	=	parent;
 	node->data		=	data;
 	node->childs[1]	=	0;
@@ -248,13 +248,7 @@ static void						split(	const tNodeArray& leaves,
 //
 static btDbvtVolume				bounds(	const tNodeArray& leaves)
 {
-#if DBVT_MERGE_IMPL==DBVT_IMPL_SSE
-	ATTRIBUTE_ALIGNED16(char	locals[sizeof(btDbvtVolume)]);
-	btDbvtVolume&	volume=*(btDbvtVolume*)locals;
-	volume=leaves[0]->volume;
-#else
 	btDbvtVolume volume=leaves[0]->volume;
-#endif
 	for(int i=1,ni=leaves.size();i<ni;++i)
 	{
 		Merge(volume,leaves[i]->volume,volume);
@@ -426,7 +420,7 @@ void			btDbvt::clear()
 {
 	if(m_root)	
 		recursedeletenode(this,m_root);
-	btAlignedFree(m_free);
+	delete m_free;
 	m_free=0;
 	m_lkhd		=	-1;
 	m_stkStack.clear();

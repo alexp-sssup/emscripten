@@ -824,7 +824,7 @@ static const unsigned BVH_ALIGNMENT_MASK = BVH_ALIGNMENT-1;
 static const unsigned BVH_ALIGNMENT_BLOCKS = 2;
 #endif
 
-
+#if 0
 unsigned int btQuantizedBvh::getAlignmentSerializationPadding()
 {
 	// I changed this to 0 since the extra padding is not needed or used.
@@ -1133,6 +1133,7 @@ btQuantizedBvh *btQuantizedBvh::deSerializeInPlace(void *i_alignedDataBuffer, un
 
 	return bvh;
 }
+#endif
 
 // Constructor that prevents btVector3's default constructor from being called
 btQuantizedBvh::btQuantizedBvh(btQuantizedBvh &self, bool /* ownsMemory */) :
@@ -1144,6 +1145,7 @@ m_bulletVersion(BT_BULLET_VERSION)
 
 }
 
+#if 0
 void btQuantizedBvh::deSerializeFloat(struct btQuantizedBvhFloatData& quantizedBvhFloatData)
 {
 	m_bvhAabbMax.deSerializeFloat(quantizedBvhFloatData.m_bvhAabbMax);
@@ -1368,7 +1370,7 @@ const char*	btQuantizedBvh::serialize(void* dataBuffer, btSerializer* serializer
 	}
 	return btQuantizedBvhDataName;
 }
-
+#endif
 
 
 

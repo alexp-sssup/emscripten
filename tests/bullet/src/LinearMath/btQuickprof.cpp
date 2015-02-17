@@ -52,6 +52,10 @@ static btClock gProfileClock;
 #include <sys/time.h>
 #endif //_WIN32
 
+#ifdef __CHEERP__
+#include <cheerp/clientlib.h>
+#endif
+
 #define mymin(a,b) (a > b ? a : b)
 
 struct btClockData
@@ -66,7 +70,11 @@ struct btClockData
 #ifdef __CELLOS_LV2__
 	uint64_t	mStartTime;
 #else
+#ifdef __CHEERP__
+	double mStartTime;
+#else
 	struct timeval mStartTime;
+#endif
 #endif
 #endif //__CELLOS_LV2__
 
@@ -116,7 +124,11 @@ void btClock::reset()
 	SYS_TIMEBASE_GET( newTime );
 	m_data->mStartTime = newTime;
 #else
+#ifdef __CHEERP__
+	m_data->mStartTime=client::Date::now();
+#else
 	gettimeofday(&m_data->mStartTime, 0);
+#endif
 #endif
 #endif
 }
@@ -168,11 +180,15 @@ unsigned long int btClock::getTimeMilliseconds()
 
 		return (unsigned long int)((double(newTime-m_data->mStartTime)) / dFreq);
 #else
-
+#ifdef __CHEERP__
+		double currentTime=client::Date::now();
+		return currentTime-m_data->mStartTime;
+#else
 		struct timeval currentTime;
 		gettimeofday(&currentTime, 0);
 		return (currentTime.tv_sec - m_data->mStartTime.tv_sec) * 1000 + 
 			(currentTime.tv_usec - m_data->mStartTime.tv_usec) / 1000;
+#endif
 #endif //__CELLOS_LV2__
 #endif
 }
@@ -226,11 +242,15 @@ unsigned long int btClock::getTimeMicroseconds()
 
 		return (unsigned long int)((double(newTime-m_data->mStartTime)) / dFreq);
 #else
-
+#ifdef __CHEERP__
+		double currentTime=client::Date::now();
+		return (currentTime-m_data->mStartTime) * 1000;
+#else
 		struct timeval currentTime;
 		gettimeofday(&currentTime, 0);
 		return (currentTime.tv_sec - m_data->mStartTime.tv_sec) * 1000000 + 
 			(currentTime.tv_usec - m_data->mStartTime.tv_usec);
+#endif
 #endif//__CELLOS_LV2__
 #endif 
 }
