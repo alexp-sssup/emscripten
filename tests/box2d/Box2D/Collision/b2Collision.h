@@ -52,10 +52,23 @@ struct b2ContactFeature
 };
 
 /// Contact ids to facilitate warm starting.
-union b2ContactID
+struct b2ContactID
 {
 	b2ContactFeature cf;
-	uint32 key;					///< Used to quickly compare contact ids.
+	void clearKey()
+	{
+		cf.indexA = 0;
+		cf.indexB = 0;
+		cf.typeA = 0;
+		cf.typeB = 0;
+	}
+	bool operator==(const b2ContactID& rhs) const
+	{
+		return cf.indexA == rhs.cf.indexA &&
+			cf.indexB == rhs.cf.indexB &&
+			cf.typeA == rhs.cf.typeA &&
+			cf.typeB == rhs.cf.typeB;
+	}
 };
 
 /// A manifold point is a contact point belonging to a contact

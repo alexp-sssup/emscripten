@@ -21,18 +21,18 @@
 #include <Box2D/Dynamics/b2Fixture.h>
 
 #include <new>
+#include <stdlib.h>
 using namespace std;
 
 b2Contact* b2EdgeAndPolygonContact::Create(b2Fixture* fixtureA, int32, b2Fixture* fixtureB, int32, b2BlockAllocator* allocator)
 {
-	void* mem = allocator->Allocate(sizeof(b2EdgeAndPolygonContact));
-	return new (mem) b2EdgeAndPolygonContact(fixtureA, fixtureB);
+	return new b2EdgeAndPolygonContact(fixtureA, fixtureB);
 }
 
 void b2EdgeAndPolygonContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 {
 	((b2EdgeAndPolygonContact*)contact)->~b2EdgeAndPolygonContact();
-	allocator->Free(contact, sizeof(b2EdgeAndPolygonContact));
+	free(contact);
 }
 
 b2EdgeAndPolygonContact::b2EdgeAndPolygonContact(b2Fixture* fixtureA, b2Fixture* fixtureB)

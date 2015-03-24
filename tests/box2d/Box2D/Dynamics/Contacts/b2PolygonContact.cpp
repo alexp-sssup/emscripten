@@ -24,18 +24,18 @@
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
 
 #include <new>
+#include <stdlib.h>
 using namespace std;
 
 b2Contact* b2PolygonContact::Create(b2Fixture* fixtureA, int32, b2Fixture* fixtureB, int32, b2BlockAllocator* allocator)
 {
-	void* mem = allocator->Allocate(sizeof(b2PolygonContact));
-	return new (mem) b2PolygonContact(fixtureA, fixtureB);
+	return new b2PolygonContact(fixtureA, fixtureB);
 }
 
 void b2PolygonContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 {
 	((b2PolygonContact*)contact)->~b2PolygonContact();
-	allocator->Free(contact, sizeof(b2PolygonContact));
+	free(contact);
 }
 
 b2PolygonContact::b2PolygonContact(b2Fixture* fixtureA, b2Fixture* fixtureB)

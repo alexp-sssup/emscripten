@@ -100,7 +100,7 @@ void b2GetPointStates(b2PointState state1[b2_maxManifoldPoints], b2PointState st
 
 		for (int32 j = 0; j < manifold2->pointCount; ++j)
 		{
-			if (manifold2->points[j].id.key == id.key)
+			if (manifold2->points[j].id == id)
 			{
 				state1[i] = b2_persistState;
 				break;
@@ -117,7 +117,7 @@ void b2GetPointStates(b2PointState state1[b2_maxManifoldPoints], b2PointState st
 
 		for (int32 j = 0; j < manifold1->pointCount; ++j)
 		{
-			if (manifold1->points[j].id.key == id.key)
+			if (manifold1->points[j].id == id)
 			{
 				state2[i] = b2_persistState;
 				break;

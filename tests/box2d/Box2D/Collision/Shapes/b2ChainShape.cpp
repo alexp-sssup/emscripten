@@ -68,8 +68,7 @@ void b2ChainShape::SetNextVertex(const b2Vec2& nextVertex)
 
 b2Shape* b2ChainShape::Clone(b2BlockAllocator* allocator) const
 {
-	void* mem = allocator->Allocate(sizeof(b2ChainShape));
-	b2ChainShape* clone = new (mem) b2ChainShape;
+	b2ChainShape* clone = new b2ChainShape;
 	clone->CreateChain(m_vertices, m_count);
 	clone->m_prevVertex = m_prevVertex;
 	clone->m_nextVertex = m_nextVertex;
@@ -90,8 +89,8 @@ void b2ChainShape::GetChildEdge(b2EdgeShape* edge, int32 index) const
 	edge->m_type = b2Shape::e_edge;
 	edge->m_radius = m_radius;
 
-	edge->m_vertex1 = m_vertices[index + 0];
-	edge->m_vertex2 = m_vertices[index + 1];
+	edge->m_vertex[0] = m_vertices[index + 0];
+	edge->m_vertex[1] = m_vertices[index + 1];
 
 	if (index > 0)
 	{
@@ -137,8 +136,8 @@ bool b2ChainShape::RayCast(b2RayCastOutput* output, const b2RayCastInput& input,
 		i2 = 0;
 	}
 
-	edgeShape.m_vertex1 = m_vertices[i1];
-	edgeShape.m_vertex2 = m_vertices[i2];
+	edgeShape.m_vertex[0] = m_vertices[i1];
+	edgeShape.m_vertex[1] = m_vertices[i2];
 
 	return edgeShape.RayCast(output, input, xf, 0);
 }

@@ -45,7 +45,7 @@ void b2CollideCircles(
 	manifold->pointCount = 1;
 
 	manifold->points[0].localPoint = circleB->m_p;
-	manifold->points[0].id.key = 0;
+	manifold->points[0].id.clearKey();
 }
 
 void b2CollidePolygonAndCircle(
@@ -98,7 +98,7 @@ void b2CollidePolygonAndCircle(
 		manifold->localNormal = normals[normalIndex];
 		manifold->localPoint = 0.5f * (v1 + v2);
 		manifold->points[0].localPoint = circleB->m_p;
-		manifold->points[0].id.key = 0;
+		manifold->points[0].id.clearKey();
 		return;
 	}
 
@@ -118,7 +118,7 @@ void b2CollidePolygonAndCircle(
 		manifold->localNormal.Normalize();
 		manifold->localPoint = v1;
 		manifold->points[0].localPoint = circleB->m_p;
-		manifold->points[0].id.key = 0;
+		manifold->points[0].id.clearKey();
 	}
 	else if (u2 <= 0.0f)
 	{
@@ -133,7 +133,7 @@ void b2CollidePolygonAndCircle(
 		manifold->localNormal.Normalize();
 		manifold->localPoint = v2;
 		manifold->points[0].localPoint = circleB->m_p;
-		manifold->points[0].id.key = 0;
+		manifold->points[0].id.clearKey();
 	}
 	else
 	{
@@ -149,6 +149,6 @@ void b2CollidePolygonAndCircle(
 		manifold->localNormal = normals[vertIndex1];
 		manifold->localPoint = faceCenter;
 		manifold->points[0].localPoint = circleB->m_p;
-		manifold->points[0].id.key = 0;
+		manifold->points[0].id.clearKey();
 	}
 }

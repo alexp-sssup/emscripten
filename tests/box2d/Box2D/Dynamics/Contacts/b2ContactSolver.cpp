@@ -46,8 +46,8 @@ b2ContactSolver::b2ContactSolver(b2ContactSolverDef* def)
 	m_step = def->step;
 	m_allocator = def->allocator;
 	m_count = def->count;
-	m_positionConstraints = (b2ContactPositionConstraint*)m_allocator->Allocate(m_count * sizeof(b2ContactPositionConstraint));
-	m_velocityConstraints = (b2ContactVelocityConstraint*)m_allocator->Allocate(m_count * sizeof(b2ContactVelocityConstraint));
+	m_positionConstraints = (b2ContactPositionConstraint*)malloc(m_count * sizeof(b2ContactPositionConstraint));
+	m_velocityConstraints = (b2ContactVelocityConstraint*)malloc(m_count * sizeof(b2ContactVelocityConstraint));
 	m_positions = def->positions;
 	m_velocities = def->velocities;
 	m_contacts = def->contacts;
@@ -129,8 +129,8 @@ b2ContactSolver::b2ContactSolver(b2ContactSolverDef* def)
 
 b2ContactSolver::~b2ContactSolver()
 {
-	m_allocator->Free(m_velocityConstraints);
-	m_allocator->Free(m_positionConstraints);
+	free(m_velocityConstraints);
+	free(m_positionConstraints);
 }
 
 // Initialize position dependent portions of the velocity constraints.

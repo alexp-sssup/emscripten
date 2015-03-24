@@ -58,8 +58,6 @@ b2World::b2World(const b2Vec2& gravity)
 
 	m_inv_dt0 = 0.0f;
 
-	m_contactManager.m_allocator = &m_blockAllocator;
-
 	memset(&m_profile, 0, sizeof(b2Profile));
 }
 
@@ -76,7 +74,7 @@ b2World::~b2World()
 		{
 			b2Fixture* fNext = f->m_next;
 			f->m_proxyCount = 0;
-			f->Destroy(&m_blockAllocator);
+			f->Destroy(NULL);
 			f = fNext;
 		}
 
@@ -112,8 +110,7 @@ b2Body* b2World::CreateBody(const b2BodyDef* def)
 		return NULL;
 	}
 
-	void* mem = m_blockAllocator.Allocate(sizeof(b2Body));
-	b2Body* b = new (mem) b2Body(def, this);
+	b2Body* b = new b2Body(def, this);
 
 	// Add to world doubly linked list.
 	b->m_prev = NULL;
@@ -178,9 +175,9 @@ void b2World::DestroyBody(b2Body* b)
 		}
 
 		f0->DestroyProxies(&m_contactManager.m_broadPhase);
-		f0->Destroy(&m_blockAllocator);
+		f0->Destroy(NULL);
 		f0->~b2Fixture();
-		m_blockAllocator.Free(f0, sizeof(b2Fixture));
+		free(f0);
 
 		b->m_fixtureList = f;
 		b->m_fixtureCount -= 1;
@@ -206,7 +203,7 @@ void b2World::DestroyBody(b2Body* b)
 
 	--m_bodyCount;
 	b->~b2Body();
-	m_blockAllocator.Free(b, sizeof(b2Body));
+	free(b);
 }
 
 b2Joint* b2World::CreateJoint(const b2JointDef* def)
@@ -217,7 +214,7 @@ b2Joint* b2World::CreateJoint(const b2JointDef* def)
 		return NULL;
 	}
 
-	b2Joint* j = b2Joint::Create(def, &m_blockAllocator);
+	b2Joint* j = b2Joint::Create(def, NULL);
 
 	// Connect to the world list.
 	j->m_prev = NULL;
@@ -341,7 +338,7 @@ void b2World::DestroyJoint(b2Joint* j)
 	j->m_edgeB.prev = NULL;
 	j->m_edgeB.next = NULL;
 
-	b2Joint::Destroy(j, &m_blockAllocator);
+	b2Joint::Destroy(j, NULL);
 
 	b2Assert(m_jointCount > 0);
 	--m_jointCount;
@@ -393,7 +390,7 @@ void b2World::Solve(const b2TimeStep& step)
 	b2Island island(m_bodyCount,
 					m_contactManager.m_contactCount,
 					m_jointCount,
-					&m_stackAllocator,
+					NULL,
 					m_contactManager.m_contactListener);
 
 	// Clear all the island flags.
@@ -412,7 +409,7 @@ void b2World::Solve(const b2TimeStep& step)
 
 	// Build and simulate all awake islands.
 	int32 stackSize = m_bodyCount;
-	b2Body** stack = (b2Body**)m_stackAllocator.Allocate(stackSize * sizeof(b2Body*));
+	b2Body** stack = (b2Body**)malloc(stackSize * sizeof(b2Body*));
 	for (b2Body* seed = m_bodyList; seed; seed = seed->m_next)
 	{
 		if (seed->m_flags & b2Body::e_islandFlag)
@@ -545,7 +542,7 @@ void b2World::Solve(const b2TimeStep& step)
 		}
 	}
 
-	m_stackAllocator.Free(stack);
+	free(stack);
 
 	{
 		b2Timer timer;
@@ -576,7 +573,7 @@ void b2World::Solve(const b2TimeStep& step)
 // Find TOI contacts and solve them.
 void b2World::SolveTOI(const b2TimeStep& step)
 {
-	b2Island island(2 * b2_maxTOIContacts, b2_maxTOIContacts, 0, &m_stackAllocator, m_contactManager.m_contactListener);
+	b2Island island(2 * b2_maxTOIContacts, b2_maxTOIContacts, 0, NULL, m_contactManager.m_contactListener);
 
 	if (m_stepComplete)
 	{
@@ -1047,8 +1044,8 @@ void b2World::DrawShape(b2Fixture* fixture, const b2Transform& xf, const b2Color
 	case b2Shape::e_edge:
 		{
 			b2EdgeShape* edge = (b2EdgeShape*)fixture->GetShape();
-			b2Vec2 v1 = b2Mul(xf, edge->m_vertex1);
-			b2Vec2 v2 = b2Mul(xf, edge->m_vertex2);
+			b2Vec2 v1 = b2Mul(xf, edge->m_vertex[0]);
+			b2Vec2 v2 = b2Mul(xf, edge->m_vertex[1]);
 			m_debugDraw->DrawSegment(v1, v2, color);
 		}
 		break;

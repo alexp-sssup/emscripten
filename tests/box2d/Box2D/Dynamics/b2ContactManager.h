@@ -46,7 +46,6 @@ public:
 	int32 m_contactCount;
 	b2ContactFilter* m_contactFilter;
 	b2ContactListener* m_contactListener;
-	b2BlockAllocator* m_allocator;
 };
 
 #endif

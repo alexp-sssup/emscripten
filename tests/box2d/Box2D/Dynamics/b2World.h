@@ -225,8 +225,10 @@ private:
 	void DrawJoint(b2Joint* joint);
 	void DrawShape(b2Fixture* shape, const b2Transform& xf, const b2Color& color);
 
+#ifndef __CHEERP__
 	b2BlockAllocator m_blockAllocator;
 	b2StackAllocator m_stackAllocator;
+#endif
 
 	int32 m_flags;
 

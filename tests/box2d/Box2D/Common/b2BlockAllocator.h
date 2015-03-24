@@ -29,6 +29,7 @@ const int32 b2_chunkArrayIncrement = 128;
 struct b2Block;
 struct b2Chunk;
 
+#ifndef __CHEERP__
 /// This is a small object allocator used for allocating small
 /// objects that persist for more than one time step.
 /// See: http://www.codeproject.com/useritems/Small_Block_Allocator.asp
@@ -58,5 +59,8 @@ private:
 	static uint8 s_blockSizeLookup[b2_maxBlockSize + 1];
 	static bool s_blockSizeLookupInitialized;
 };
+#else
+class b2BlockAllocator;
+#endif
 
 #endif

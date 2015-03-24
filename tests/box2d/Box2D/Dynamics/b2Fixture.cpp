@@ -55,7 +55,7 @@ void b2Fixture::Create(b2BlockAllocator* allocator, b2Body* body, const b2Fixtur
 
 	// Reserve proxy space
 	int32 childCount = m_shape->GetChildCount();
-	m_proxies = (b2FixtureProxy*)allocator->Allocate(childCount * sizeof(b2FixtureProxy));
+	m_proxies = (b2FixtureProxy*)malloc(childCount * sizeof(b2FixtureProxy));
 	for (int32 i = 0; i < childCount; ++i)
 	{
 		m_proxies[i].fixture = NULL;
@@ -73,7 +73,7 @@ void b2Fixture::Destroy(b2BlockAllocator* allocator)
 
 	// Free the proxy array.
 	int32 childCount = m_shape->GetChildCount();
-	allocator->Free(m_proxies, childCount * sizeof(b2FixtureProxy));
+	free(m_proxies);
 	m_proxies = NULL;
 
 	// Free the child shape.
@@ -83,7 +83,7 @@ void b2Fixture::Destroy(b2BlockAllocator* allocator)
 		{
 			b2CircleShape* s = (b2CircleShape*)m_shape;
 			s->~b2CircleShape();
-			allocator->Free(s, sizeof(b2CircleShape));
+			free(s);
 		}
 		break;
 
@@ -91,7 +91,7 @@ void b2Fixture::Destroy(b2BlockAllocator* allocator)
 		{
 			b2EdgeShape* s = (b2EdgeShape*)m_shape;
 			s->~b2EdgeShape();
-			allocator->Free(s, sizeof(b2EdgeShape));
+			free(s);
 		}
 		break;
 
@@ -99,7 +99,7 @@ void b2Fixture::Destroy(b2BlockAllocator* allocator)
 		{
 			b2PolygonShape* s = (b2PolygonShape*)m_shape;
 			s->~b2PolygonShape();
-			allocator->Free(s, sizeof(b2PolygonShape));
+			free(s);
 		}
 		break;
 
@@ -107,7 +107,7 @@ void b2Fixture::Destroy(b2BlockAllocator* allocator)
 		{
 			b2ChainShape* s = (b2ChainShape*)m_shape;
 			s->~b2ChainShape();
-			allocator->Free(s, sizeof(b2ChainShape));
+			free(s);
 		}
 		break;
 
@@ -254,8 +254,8 @@ void b2Fixture::Dump(int32 bodyIndex)
 			b2Log("    b2EdgeShape shape;\n");
 			b2Log("    shape.m_radius = %.15lef;\n", s->m_radius);
 			b2Log("    shape.m_vertex0.Set(%.15lef, %.15lef);\n", s->m_vertex0.x, s->m_vertex0.y);
-			b2Log("    shape.m_vertex1.Set(%.15lef, %.15lef);\n", s->m_vertex1.x, s->m_vertex1.y);
-			b2Log("    shape.m_vertex2.Set(%.15lef, %.15lef);\n", s->m_vertex2.x, s->m_vertex2.y);
+			b2Log("    shape.m_vertex1.Set(%.15lef, %.15lef);\n", s->m_vertex[0].x, s->m_vertex[0].y);
+			b2Log("    shape.m_vertex2.Set(%.15lef, %.15lef);\n", s->m_vertex[1].x, s->m_vertex[1].y);
 			b2Log("    shape.m_vertex3.Set(%.15lef, %.15lef);\n", s->m_vertex3.x, s->m_vertex3.y);
 			b2Log("    shape.m_hasVertex0 = bool(%d);\n", s->m_hasVertex0);
 			b2Log("    shape.m_hasVertex3 = bool(%d);\n", s->m_hasVertex3);

@@ -23,6 +23,7 @@
 #include <memory>
 using namespace std;
 
+#ifndef __CHEERP__
 int32 b2BlockAllocator::s_blockSizes[b2_blockSizes] = 
 {
 	16,		// 0
@@ -215,3 +216,5 @@ void b2BlockAllocator::Clear()
 
 	memset(m_freeLists, 0, sizeof(m_freeLists));
 }
+
+#endif

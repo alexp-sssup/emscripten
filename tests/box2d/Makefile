@@ -56,6 +56,9 @@ all: box2d.a
 box2d.a: $(OBJECTS)
 	$(AR) rvs $@ $(OBJECTS)
 
+box2d.bc: $(OBJECTS)
+	$(LLVMLINK) $(OBJECTS) -o $@
+
 clean:
 	rm box2d.a
 

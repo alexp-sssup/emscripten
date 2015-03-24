@@ -23,18 +23,18 @@
 #include <Box2D/Collision/Shapes/b2EdgeShape.h>
 
 #include <new>
+#include <stdlib.h>
 using namespace std;
 
 b2Contact* b2ChainAndPolygonContact::Create(b2Fixture* fixtureA, int32 indexA, b2Fixture* fixtureB, int32 indexB, b2BlockAllocator* allocator)
 {
-	void* mem = allocator->Allocate(sizeof(b2ChainAndPolygonContact));
-	return new (mem) b2ChainAndPolygonContact(fixtureA, indexA, fixtureB, indexB);
+	return new b2ChainAndPolygonContact(fixtureA, indexA, fixtureB, indexB);
 }
 
 void b2ChainAndPolygonContact::Destroy(b2Contact* contact, b2BlockAllocator* allocator)
 {
 	((b2ChainAndPolygonContact*)contact)->~b2ChainAndPolygonContact();
-	allocator->Free(contact, sizeof(b2ChainAndPolygonContact));
+	free(contact);
 }
 
 b2ChainAndPolygonContact::b2ChainAndPolygonContact(b2Fixture* fixtureA, int32 indexA, b2Fixture* fixtureB, int32 indexB)

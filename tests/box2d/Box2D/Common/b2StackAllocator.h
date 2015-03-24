@@ -31,6 +31,7 @@ struct b2StackEntry
 	bool usedMalloc;
 };
 
+#ifndef __CHEERP__
 // This is a stack allocator used for fast per step allocations.
 // You must nest allocate/free pairs. The code will assert
 // if you try to interleave multiple allocate/free pairs.
@@ -56,5 +57,8 @@ private:
 	b2StackEntry m_entries[b2_maxStackEntries];
 	int32 m_entryCount;
 };
+#else
+class b2StackAllocator;
+#endif
 
 #endif

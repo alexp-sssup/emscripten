@@ -33,7 +33,7 @@ void b2CollideEdgeAndCircle(b2Manifold* manifold,
 	// Compute circle in frame of edge
 	b2Vec2 Q = b2MulT(xfA, b2Mul(xfB, circleB->m_p));
 	
-	b2Vec2 A = edgeA->m_vertex1, B = edgeA->m_vertex2;
+	b2Vec2 A = edgeA->m_vertex[0], B = edgeA->m_vertex[1];
 	b2Vec2 e = B - A;
 	
 	// Barycentric coordinates
@@ -78,7 +78,7 @@ void b2CollideEdgeAndCircle(b2Manifold* manifold,
 		manifold->type = b2Manifold::e_circles;
 		manifold->localNormal.SetZero();
 		manifold->localPoint = P;
-		manifold->points[0].id.key = 0;
+		manifold->points[0].id.clearKey();
 		manifold->points[0].id.cf = cf;
 		manifold->points[0].localPoint = circleB->m_p;
 		return;
@@ -116,7 +116,7 @@ void b2CollideEdgeAndCircle(b2Manifold* manifold,
 		manifold->type = b2Manifold::e_circles;
 		manifold->localNormal.SetZero();
 		manifold->localPoint = P;
-		manifold->points[0].id.key = 0;
+		manifold->points[0].id.clearKey();
 		manifold->points[0].id.cf = cf;
 		manifold->points[0].localPoint = circleB->m_p;
 		return;
@@ -146,7 +146,7 @@ void b2CollideEdgeAndCircle(b2Manifold* manifold,
 	manifold->type = b2Manifold::e_faceA;
 	manifold->localNormal = n;
 	manifold->localPoint = A;
-	manifold->points[0].id.key = 0;
+	manifold->points[0].id.clearKey();
 	manifold->points[0].id.cf = cf;
 	manifold->points[0].localPoint = circleB->m_p;
 }
@@ -235,8 +235,8 @@ void b2EPCollider::Collide(b2Manifold* manifold, const b2EdgeShape* edgeA, const
 	m_centroidB = b2Mul(m_xf, polygonB->m_centroid);
 	
 	m_v0 = edgeA->m_vertex0;
-	m_v1 = edgeA->m_vertex1;
-	m_v2 = edgeA->m_vertex2;
+	m_v1 = edgeA->m_vertex[0];
+	m_v2 = edgeA->m_vertex[1];
 	m_v3 = edgeA->m_vertex3;
 	
 	bool hasVertex0 = edgeA->m_hasVertex0;

@@ -27,6 +27,8 @@
 #include <cmath>
 #endif
 
+#include <stdlib.h>
+
 #define B2_NOT_USED(x) ((void)(x))
 #define b2Assert(A) assert(A)
 
@@ -131,11 +133,16 @@ typedef double float64;
 
 // Memory Allocation
 
+#ifndef __CHEERP__
 /// Implement this function to use your own memory allocator.
 void* b2Alloc(int32 size);
 
 /// If you implement b2Alloc, you should also implement this function.
 void b2Free(void* mem);
+#else
+#define b2Alloc malloc
+#define b2Free free
+#endif
 
 /// Logging function.
 void b2Log(const char* string, ...);

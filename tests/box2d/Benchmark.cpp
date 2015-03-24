@@ -28,6 +28,10 @@ typedef struct {
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
+#ifdef __CHEERP__
+#include <cheerp/clientlib.h>
+#endif
+
 
 #include "Box2D/Box2D.h"
 
@@ -58,7 +62,8 @@ result_t measure(clock_t *times) {
 
 b2World *world;
 clock_t *times, minn = CLOCKS_PER_SEC * 1000 * 100, maxx = -1;
-b2Body* topBody;
+b2Body** bodies = NULL;
+int32 bodyCount = 0;
 int32 frameCounter = 0;
 
 void iter();
@@ -107,6 +112,8 @@ int main(int argc, char **argv) {
 		b2Vec2 deltaX(0.5625f, 1);
 		b2Vec2 deltaY(1.125f, 0.0f);
 
+		bodies = new b2Body*[e_count*e_count];
+		memset(bodies,0,sizeof(sizeof(b2Body*)*e_count*e_count));
 		for (int32 i = 0; i < e_count; ++i) {
 			y = x;
 
@@ -116,9 +123,8 @@ int main(int argc, char **argv) {
 				bd.position = y;
 				b2Body* body = world->CreateBody(&bd);
 				body->CreateFixture(&shape, 5.0f);
-
-        topBody = body;
-
+				bodies[bodyCount] = body;
+				bodyCount++;
 				y += deltaY;
 			}
 
@@ -139,16 +145,24 @@ int main(int argc, char **argv) {
 
 void iter() {
   if (frameCounter < FRAMES) {
+#ifndef __CHEERP__
 	  clock_t start = clock();
+#else
+	  double start = client::Date::now() * CLOCKS_PER_SEC / 1000;
+#endif
 	  world->Step(1.0f/60.0f, 3, 3);
+#ifndef __CHEERP__
 	  clock_t end = clock();
+#else
+	  double end = client::Date::now() * CLOCKS_PER_SEC / 1000;
+#endif
     clock_t curr = end - start;
 	  times[frameCounter] = curr;
     if (curr < minn) minn = curr;
     if (curr > maxx) maxx = curr;
 #if DEBUG
-    printf("%f :: ", topBody->GetPosition().y);
-	  printf("%f\n", (float32)(end - start) / CLOCKS_PER_SEC * 1000);
+	for(int32 i=0;i<bodyCount;i++)
+	    printf("%f\n%f\n", bodies[i]->GetPosition().x, bodies[i]->GetPosition().y);
 #endif
     frameCounter++;
     return;

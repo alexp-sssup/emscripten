@@ -31,7 +31,6 @@ b2ContactManager::b2ContactManager()
 	m_contactCount = 0;
 	m_contactFilter = &b2_defaultFilter;
 	m_contactListener = &b2_defaultListener;
-	m_allocator = NULL;
 }
 
 void b2ContactManager::Destroy(b2Contact* c)
@@ -95,7 +94,7 @@ void b2ContactManager::Destroy(b2Contact* c)
 	}
 
 	// Call the factory.
-	b2Contact::Destroy(c, m_allocator);
+	b2Contact::Destroy(c, NULL);
 	--m_contactCount;
 }
 
@@ -236,7 +235,7 @@ void b2ContactManager::AddPair(void* proxyUserDataA, void* proxyUserDataB)
 	}
 
 	// Call the factory.
-	b2Contact* c = b2Contact::Create(fixtureA, indexA, fixtureB, indexB, m_allocator);
+	b2Contact* c = b2Contact::Create(fixtureA, indexA, fixtureB, indexB, NULL);
 	if (c == NULL)
 	{
 		return;

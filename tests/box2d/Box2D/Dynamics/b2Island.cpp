@@ -162,22 +162,22 @@ b2Island::b2Island(
 	m_allocator = allocator;
 	m_listener = listener;
 
-	m_bodies = (b2Body**)m_allocator->Allocate(bodyCapacity * sizeof(b2Body*));
-	m_contacts = (b2Contact**)m_allocator->Allocate(contactCapacity	 * sizeof(b2Contact*));
-	m_joints = (b2Joint**)m_allocator->Allocate(jointCapacity * sizeof(b2Joint*));
+	m_bodies = (b2Body**)malloc(bodyCapacity * sizeof(b2Body*));
+	m_contacts = (b2Contact**)malloc(contactCapacity	 * sizeof(b2Contact*));
+	m_joints = (b2Joint**)malloc(jointCapacity * sizeof(b2Joint*));
 
-	m_velocities = (b2Velocity*)m_allocator->Allocate(m_bodyCapacity * sizeof(b2Velocity));
-	m_positions = (b2Position*)m_allocator->Allocate(m_bodyCapacity * sizeof(b2Position));
+	m_velocities = (b2Velocity*)malloc(m_bodyCapacity * sizeof(b2Velocity));
+	m_positions = (b2Position*)malloc(m_bodyCapacity * sizeof(b2Position));
 }
 
 b2Island::~b2Island()
 {
 	// Warning: the order should reverse the constructor order.
-	m_allocator->Free(m_positions);
-	m_allocator->Free(m_velocities);
-	m_allocator->Free(m_joints);
-	m_allocator->Free(m_contacts);
-	m_allocator->Free(m_bodies);
+	free(m_positions);
+	free(m_velocities);
+	free(m_joints);
+	free(m_contacts);
+	free(m_bodies);
 }
 
 void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& gravity, bool allowSleep)

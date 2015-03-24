@@ -19,6 +19,7 @@
 #include <Box2D/Common/b2StackAllocator.h>
 #include <Box2D/Common/b2Math.h>
 
+#ifndef __CHEERP__
 b2StackAllocator::b2StackAllocator()
 {
 	m_index = 0;
@@ -81,3 +82,4 @@ int32 b2StackAllocator::GetMaxAllocation() const
 {
 	return m_maxAllocation;
 }
+#endif

@@ -22,6 +22,8 @@
 #include <Box2D/Dynamics/Contacts/b2Contact.h>
 #include <Box2D/Dynamics/Joints/b2Joint.h>
 
+#include <stdlib.h>
+
 b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 {
 	b2Assert(bd->position.IsValid());
@@ -156,11 +158,8 @@ b2Fixture* b2Body::CreateFixture(const b2FixtureDef* def)
 		return NULL;
 	}
 
-	b2BlockAllocator* allocator = &m_world->m_blockAllocator;
-
-	void* memory = allocator->Allocate(sizeof(b2Fixture));
-	b2Fixture* fixture = new (memory) b2Fixture;
-	fixture->Create(allocator, this, def);
+	b2Fixture* fixture = new b2Fixture;
+	fixture->Create(NULL, this, def);
 
 	if (m_flags & e_activeFlag)
 	{
@@ -243,19 +242,17 @@ void b2Body::DestroyFixture(b2Fixture* fixture)
 		}
 	}
 
-	b2BlockAllocator* allocator = &m_world->m_blockAllocator;
-
 	if (m_flags & e_activeFlag)
 	{
 		b2BroadPhase* broadPhase = &m_world->m_contactManager.m_broadPhase;
 		fixture->DestroyProxies(broadPhase);
 	}
 
-	fixture->Destroy(allocator);
+	fixture->Destroy(NULL);
 	fixture->m_body = NULL;
 	fixture->m_next = NULL;
 	fixture->~b2Fixture();
-	allocator->Free(fixture, sizeof(b2Fixture));
+	free(fixture);
 
 	--m_fixtureCount;
 

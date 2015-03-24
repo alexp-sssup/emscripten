@@ -52,7 +52,7 @@ public:
 	void ComputeMass(b2MassData* massData, float32 density) const;
 	
 	/// These are the edge vertices
-	b2Vec2 m_vertex1, m_vertex2;
+	b2Vec2 m_vertex[2];
 
 	/// Optional adjacent vertices. These are used for smooth collision.
 	b2Vec2 m_vertex0, m_vertex3;

@@ -22,8 +22,7 @@ using namespace std;
 
 b2Shape* b2CircleShape::Clone(b2BlockAllocator* allocator) const
 {
-	void* mem = allocator->Allocate(sizeof(b2CircleShape));
-	b2CircleShape* clone = new (mem) b2CircleShape;
+	b2CircleShape* clone = new b2CircleShape;
 	*clone = *this;
 	return clone;
 }

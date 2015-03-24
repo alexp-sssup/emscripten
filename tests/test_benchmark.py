@@ -947,7 +947,6 @@ class benchmark(RunnerCore):
                       force_c=True, shared_args=['-I' + path_from_root('tests', 'zlib')], lib_builder=lib_builder)
 
   def test_zzz_box2d(self): # Called thus so it runs late in the alphabetical cycle... it is long
-    if CORE_BENCHMARKS: return
     src = open(path_from_root('tests', 'box2d', 'Benchmark.cpp'), 'r').read()
     def lib_builder(name, native, env_init, archive_extension, target_configure_args):
       return self.get_library('box2d', [os.path.join('box2d.'+archive_extension)], configure=None, make_args=['box2d.'+archive_extension], native=native, cache_name_extra=name+archive_extension, env_init=env_init)
