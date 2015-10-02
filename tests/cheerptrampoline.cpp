@@ -21,7 +21,7 @@ void webMain()
 	args[0]="benchmark";
 	args[1]="4";
 	const char** a=&args[0];
-#ifdef EMBENCHEN
+#if EMBENCHEN
 	if(client::Module->get_preRun())
 	{
 		client::Array& preRun=*client::Module->get_preRun();
@@ -30,7 +30,7 @@ void webMain()
 	}
 #endif
 	main(2, a);
-#ifdef EMBENCHEN
+#if EMBENCHEN
 	if(client::Module->get_postRun())
 	{
 		client::Array& postRun=*client::Module->get_postRun();
