@@ -13,13 +13,16 @@ from tools.shared import *
 # 5: 10 seconds
 DEFAULT_ARG = '4'
 
-TEST_REPS = 3
+TEST_REPS = int(os.getenv('TEST_REPS', 3))
 
 # by default, run just core benchmarks
 CORE_BENCHMARKS = True
 # if a specific benchmark is requested, don't limit to core
 if 'benchmark.' in str(sys.argv):
   CORE_BENCHMARKS = False
+
+# show invoked command line arguments
+VERBOSE = int(os.getenv('VERBOSE', 0))
 
 IGNORE_COMPILATION = 0
 
@@ -100,6 +103,8 @@ class NativeBenchmarker(Benchmarker):
         filename,
         '-o', filename+'.native'
       ] + self.args + shared_args + native_args + get_clang_native_args()
+      if VERBOSE:
+        print(' '.join(cmd))
       process = Popen(cmd, stdout=PIPE, stderr=parent.stderr_redirect, env=get_clang_native_env())
       output = process.communicate()
       if process.returncode is not 0:
@@ -172,6 +177,8 @@ process(sys.argv[1])
     ] + shared_args + emcc_args + self.extra_args
     if 'FORCE_FILESYSTEM=1' in cmd:
       cmd = [arg if arg != 'NO_FILESYSTEM=1' else 'NO_FILESYSTEM=0' for arg in cmd]
+    if VERBOSE:
+      print(' '.join(cmd))
     output = Popen(cmd, stdout=PIPE, stderr=PIPE, env=self.env).communicate()
     assert os.path.exists(final), 'Failed to compile file: ' + output[0] + ' (looked for ' + final + ')'
     if self.binaryen_opts:
@@ -280,7 +287,8 @@ class CheerpBenchmarker(Benchmarker):
         '-Wno-writable-strings', # for how we set up webMain
         '-o', final
       ] + shared_args
-      #print(' '.join(cmd))
+      if VERBOSE:
+        print(' '.join(cmd))
       subprocess.check_call(cmd)
       Building.get_binaryen()
       if self.binaryen_opts:
