@@ -55,6 +55,8 @@ class Benchmarker(object):
     # speed
 
     if baseline == self: baseline = None
+    if not self.times:
+        return
     mean = sum(self.times)/len(self.times)
     squared_times = [x*x for x in self.times]
     mean_of_squared = sum(squared_times)/len(self.times)
@@ -119,6 +121,8 @@ class NativeBenchmarker(Benchmarker):
     self.filename = final
 
   def run(self, args):
+    if not TEST_REPS:
+      return
     process = Popen([self.filename] + args, stdout=PIPE, stderr=PIPE)
     return process.communicate()[0]
 
@@ -186,6 +190,8 @@ process(sys.argv[1])
     self.filename = final
 
   def run(self, args):
+    if not TEST_REPS:
+      return
     return run_js(self.filename, engine=self.engine, args=args, stderr=PIPE, full_output=True, assert_returncode=None)
 
   def get_output_files(self):
@@ -298,7 +304,10 @@ class CheerpBenchmarker(Benchmarker):
         try_delete(dir_)
 
   def run(self, args):
-    return run_js(self.filename, engine=self.engine, args=args, stderr=PIPE, full_output=True, assert_returncode=None)
+    if not TEST_REPS:
+      return
+    return run_js(self.filename, engine=self.engine, args=args, stderr=PIPE,
+                  full_output=True, assert_returncode=None)
 
   def get_output_files(self):
     files = [self.filename]
