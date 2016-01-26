@@ -98,6 +98,9 @@ function JSify(data, functionsOnly) {
     } else {
       libFuncsToInclude = DEFAULT_LIBRARY_FUNCS_TO_INCLUDE;
     }
+    if (USE_STARTUP_PERFORMANCE) {
+      libFuncsToInclude.push('performance_now');
+    }
     libFuncsToInclude.forEach(function(ident) {
       var finalName = '_' + ident;
       if (ident[0] === '$') {

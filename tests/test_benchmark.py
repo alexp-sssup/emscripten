@@ -28,6 +28,8 @@ IGNORE_COMPILATION = 0
 
 OPTIMIZATIONS = '-O3'
 
+MEASURE_TIME_TO_MAIN = False
+
 class Benchmarker(object):
   def __init__(self, name):
     self.name = name
@@ -181,6 +183,12 @@ process(sys.argv[1])
     ] + shared_args + emcc_args + self.extra_args
     if 'FORCE_FILESYSTEM=1' in cmd:
       cmd = [arg if arg != 'NO_FILESYSTEM=1' else 'NO_FILESYSTEM=0' for arg in cmd]
+
+    if MEASURE_TIME_TO_MAIN:
+      args += ['-print-startup-time']
+      args += ['-s', 'NO_BROWSER=1']
+      args += ['-s', 'EXPORTED_RUNTIME_METHODS=[]']
+
     if VERBOSE:
       print(' '.join(cmd))
     output = Popen(cmd, stdout=PIPE, stderr=PIPE, env=self.env).communicate()
@@ -280,6 +288,9 @@ class CheerpBenchmarker(Benchmarker):
 
     if mode in ['wasm', 'asmjs']:
         cheerp_args += ['-cheerp-linear-heap-size=256']
+
+    if MEASURE_TIME_TO_MAIN:
+        cheerp_args += ['-mllvm', '-cheerp-measure-time-to-main']
 
     try:
       for arg in cheerp_args[:]:

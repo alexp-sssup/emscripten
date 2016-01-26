@@ -1920,6 +1920,14 @@ LibraryManager.library = {
     return ((Date.now() - _clock.start) * ({{{ cDefine('CLOCKS_PER_SEC') }}} / 1000))|0;
   },
 
+#if USE_STARTUP_PERFORMANCE
+  performance_now: function() {
+    var ret = __performance_now()|0;
+    {{{ 'HEAP32[((TOTAL_MEMORY - 4)>>2)]=ret' }}};
+    return ret;
+  },
+#endif
+
   time: function(ptr) {
     var ret = (Date.now()/1000)|0;
     if (ptr) {

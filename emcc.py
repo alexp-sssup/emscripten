@@ -179,6 +179,7 @@ class EmccOptions(object):
     self.default_object_extension = '.o'
     self.valid_abspaths = []
     self.separate_asm = False
+    self.use_startup_performance = False
     self.cfi = False
     # Specifies the line ending format to use for all generated text files.
     # Defaults to using the native EOL on each platform (\r\n on Windows, \n on
@@ -1305,6 +1306,7 @@ There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR P
       if not shared.Settings.LEGALIZE_JS_FFI:
         assert shared.Building.is_wasm_only(), 'LEGALIZE_JS_FFI incompatible with RUNNING_JS_OPTS and non-wasm BINARYEN_METHOD.'
 
+      shared.Settings.USE_STARTUP_PERFORMANCE = options.use_startup_performance
       shared.Settings.EMSCRIPTEN_VERSION = shared.EMSCRIPTEN_VERSION
       shared.Settings.OPT_LEVEL = options.opt_level
       shared.Settings.DEBUG_LEVEL = options.debug_level
@@ -2110,6 +2112,9 @@ def parse_args(newargs):
       newargs[i+1] = ''
     elif newargs[i] == '--separate-asm':
       options.separate_asm = True
+      newargs[i] = ''
+    elif newargs[i] == '--print-startup-time':
+      options.use_startup_performance = True
       newargs[i] = ''
     elif newargs[i].startswith(('-I', '-L')):
       options.path_name = newargs[i][2:]

@@ -447,6 +447,8 @@ def create_backend_args(infile, temp_js, settings):
     args += ['-emscripten-global-base=0']
   elif settings['GLOBAL_BASE'] >= 0:
     args += ['-emscripten-global-base=%d' % settings['GLOBAL_BASE']]
+  if settings['USE_STARTUP_PERFORMANCE']:
+    args += ['-emscripten-time-to-main']
   if settings['SIDE_MODULE']:
     args += ['-emscripten-side-module']
   if settings['LEGALIZE_JS_FFI'] != 1:

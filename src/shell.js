@@ -1,3 +1,7 @@
+#if USE_STARTUP_PERFORMANCE
+var __performance_now = typeof dateNow !== "undefined" ? dateNow : (typeof performance !== "undefined" ? performance.now : function() {return new Date().getTime()});
+var __performance_start_time = __performance_now() | 0;
+#endif
 #if SIDE_MODULE == 0
 // The Module object: Our interface to the outside world. We import
 // and export values on it. There are various ways Module can be used:
