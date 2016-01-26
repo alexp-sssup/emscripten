@@ -1557,7 +1557,10 @@ class Building(object):
 
 
   @staticmethod
-  def build_library(name, build_dir, output_dir, generated_libs, configure=['sh', './configure'], configure_args=[], make=['make'], make_args='help', cache=None, cache_name=None, copy_project=False, env_init={}, source_dir=None, native=False):
+  def build_library(name, build_dir, output_dir, generated_libs,
+          configure=['sh', './configure'], configure_args=[], make=['make'],
+          make_args=[], cache=None, cache_name=None, copy_project=False,
+          env_init={}, source_dir=None, native=False):
     ''' Build a library into a .bc file. We build the .bc file once and cache it for all our tests. (We cache in
         memory since the test directory is destroyed and recreated for each test. Note that we cache separately
         for different compilers).
@@ -1565,8 +1568,7 @@ class Building(object):
 
     if type(generated_libs) is not list: generated_libs = [generated_libs]
     if source_dir is None: source_dir = path_from_root('tests', name.replace('_native', ''))
-    if make_args == 'help':
-      make_args = ['-j', str(multiprocessing.cpu_count())]
+    make_args = ['-j', str(multiprocessing.cpu_count())] + make_args
 
     temp_dir = build_dir
     if copy_project:
