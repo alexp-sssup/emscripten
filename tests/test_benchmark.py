@@ -28,6 +28,7 @@ IGNORE_COMPILATION = 0
 
 OPTIMIZATIONS = '-O3'
 
+GENERATE_DEBUG_SYMBOLS = False
 MEASURE_TIME_TO_MAIN = False
 
 class Benchmarker(object):
@@ -103,6 +104,7 @@ class NativeBenchmarker(Benchmarker):
       compiler = self.cxx if filename.endswith('cpp') else self.cc
       cmd = [
         compiler,
+        '-g' if GENERATE_DEBUG_SYMBOLS else '',
         '-fno-math-errno',
         filename,
         '-o', filename+'.native'
@@ -146,6 +148,10 @@ class EmscriptenBenchmarker(Benchmarker):
     self.name = name
     self.engine = engine
     self.extra_args = extra_args[:]
+
+    if GENERATE_DEBUG_SYMBOLS:
+      self.extra_args += ['-g', '-g4']
+
     self.env = os.environ.copy()
     for k, v in env.items():
       self.env[k] = v
@@ -167,8 +173,14 @@ process(sys.argv[1])
 ''' % str(args[:-1]) # do not hardcode in the last argument, the default arg
 )
 
-    final = os.path.dirname(filename) + os.path.sep + self.name + ('_' if self.name else '') + os.path.basename(filename) + '.js'
-    final = final.replace('.cpp', '')
+    basename = os.path.dirname(filename) + os.path.sep
+    basename += self.name + '_' + os.path.basename(filename)
+
+    if GENERATE_DEBUG_SYMBOLS:
+        final = basename + '.html'
+    else:
+        final = basename + '.js'
+
     try_delete(final)
     cmd = [
       PYTHON, EMCC, filename,
@@ -193,9 +205,14 @@ process(sys.argv[1])
       print(' '.join(cmd))
     output = Popen(cmd, stdout=PIPE, stderr=PIPE, env=self.env).communicate()
     assert os.path.exists(final), 'Failed to compile file: ' + output[0] + ' (looked for ' + final + ')'
+
+    if GENERATE_DEBUG_SYMBOLS:
+        self.filename = final.replace('.html', 'js')
+    else:
+        self.filename = final
+
     if self.binaryen_opts:
-      run_binaryen_opts(final[:-3] + '.wasm', self.binaryen_opts)
-    self.filename = final
+      run_binaryen_opts(self.filename[:-3] + '.wasm', self.binaryen_opts)
 
   def run(self, args):
     if not TEST_REPS:
@@ -218,6 +235,9 @@ class CheerpBenchmarker(Benchmarker):
     self.engine = engine
     self.args = args[:]
     self.binaryen_opts = binaryen_opts[:]
+
+    if GENERATE_DEBUG_SYMBOLS:
+        self.args += ['-g']
 
   def build(self, parent, filename, args, shared_args, emcc_args, native_args, native_exec, lib_builder, has_output_parser):
     suffix = filename.split('.')[-1]
@@ -259,6 +279,8 @@ class CheerpBenchmarker(Benchmarker):
 
     cheerp_args += ['-cheerp-mode=' + mode]
 
+    cheerp_args += self.args
+
     self.parent = parent
     if lib_builder:
       # build as "native" (so no emcc env stuff), but with all the cheerp stuff
@@ -281,6 +303,10 @@ class CheerpBenchmarker(Benchmarker):
     dirs_to_delete = []
 
     self.filename = final
+
+    if GENERATE_DEBUG_SYMBOLS:
+        cheerp_args += ['-cheerp-sourcemap=' + final + '.map']
+        cheerp_args += ['-cheerp-pretty-code']
 
     if mode == 'wasm':
         cheerp_args += ['-cheerp-wasm-loader=' + final]
