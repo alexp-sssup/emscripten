@@ -1486,8 +1486,6 @@ class Building(object):
       return False
 
     # Append the Emscripten toolchain file if the user didn't specify one.
-    if not has_substr(args, '-DCMAKE_TOOLCHAIN_FILE'):
-      args.append('-DCMAKE_TOOLCHAIN_FILE=' + path_from_root('cmake', 'Modules', 'Platform', 'Emscripten.cmake'))
 
     # On Windows specify MinGW Makefiles if we have MinGW and no other toolchain was specified, to avoid CMake
     # pulling in a native Visual Studio, or Unix Makefiles.

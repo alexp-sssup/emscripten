@@ -91,7 +91,7 @@ class NativeBenchmarker(Benchmarker):
 
   def build(self, parent, filename, args, shared_args, emcc_args, native_args, native_exec, lib_builder, has_output_parser):
     self.parent = parent
-    if lib_builder: native_args = native_args + lib_builder(self.name, native=True, env_init={ 'CC': self.cc, 'CXX': self.cxx })
+    if lib_builder: native_args = native_args + lib_builder(self.name, native=True, env_init={ 'CC': self.cc, 'CXX': self.cxx }, archive_extension="a", target_configure_args=[])
     if not native_exec:
       compiler = self.cxx if filename.endswith('cpp') else self.cc
       cmd = [
@@ -143,7 +143,7 @@ class EmscriptenBenchmarker(Benchmarker):
   def build(self, parent, filename, args, shared_args, emcc_args, native_args, native_exec, lib_builder, has_output_parser):
     self.filename = filename
     llvm_root = self.env.get('LLVM') or LLVM_ROOT
-    if lib_builder: emcc_args = emcc_args + lib_builder('js_' + llvm_root, native=False, env_init=self.env)
+    if lib_builder: emcc_args = emcc_args + lib_builder('js_' + llvm_root, native=False, env_init=self.env, archive_extension="a", target_configure_args=[])
 
     open('hardcode.py', 'w').write('''
 def process(filename):
@@ -914,8 +914,8 @@ class benchmark(RunnerCore):
 
   def lua(self, benchmark, expected, output_parser=None, args_processor=None):
     shutil.copyfile(path_from_root('tests', 'lua', benchmark + '.lua'), benchmark + '.lua')
-    def lib_builder(name, native, env_init):
-      ret = self.get_library('lua_native' if native else 'lua', [os.path.join('src', 'lua'), os.path.join('src', 'liblua.a')], make=['make', 'generic'], configure=None, native=native, cache_name_extra=name, env_init=env_init)
+    def lib_builder(name, native, env_init, archive_extension, target_configure_args):
+      ret = self.get_library('lua_native' if native else 'lua', [os.path.join('src', 'lua'), os.path.join('src', 'liblua.'+archive_extension)], make=['make', 'generic'], configure=None, native=native, cache_name_extra=name+archive_extension, env_init=env_init)
       if native: return ret
       shutil.copyfile(ret[0], ret[0] + '.bc')
       ret[0] += '.bc'
@@ -938,29 +938,31 @@ class benchmark(RunnerCore):
 
   def test_zzz_zlib(self):
     src = open(path_from_root('tests', 'zlib', 'benchmark.c'), 'r').read()
-    def lib_builder(name, native, env_init):
-      return self.get_library('zlib', os.path.join('libz.a'), make_args=['libz.a'], native=native, cache_name_extra=name, env_init=env_init)
+    def lib_builder(name, native, env_init, archive_extension, target_configure_args):
+      return self.get_library('zlib', os.path.join('libz.'+archive_extension), make_args=['libz.'+archive_extension], native=native, cache_name_extra=name+archive_extension, env_init=env_init)
     self.do_benchmark('zlib', src, '''ok.''',
                       force_c=True, shared_args=['-I' + path_from_root('tests', 'zlib')], lib_builder=lib_builder)
 
   def test_zzz_box2d(self): # Called thus so it runs late in the alphabetical cycle... it is long
     src = open(path_from_root('tests', 'box2d', 'Benchmark.cpp'), 'r').read()
-    def lib_builder(name, native, env_init):
-      return self.get_library('box2d', [os.path.join('box2d.a')], configure=None, native=native, cache_name_extra=name, env_init=env_init)
+    def lib_builder(name, native, env_init, archive_extension, target_configure_args):
+      return self.get_library('box2d', [os.path.join('box2d.'+archive_extension)], configure=None, make_args=['box2d.'+archive_extension], native=native, cache_name_extra=name+archive_extension, env_init=env_init)
     self.do_benchmark('box2d', src, 'frame averages', shared_args=['-I' + path_from_root('tests', 'box2d')], lib_builder=lib_builder)
 
   def test_zzz_bullet(self): # Called thus so it runs late in the alphabetical cycle... it is long
     src = open(path_from_root('tests', 'bullet', 'Demos', 'Benchmarks', 'BenchmarkDemo.cpp'), 'r').read() + \
           open(path_from_root('tests', 'bullet', 'Demos', 'Benchmarks', 'main.cpp'), 'r').read()
 
-    def lib_builder(name, native, env_init):
-      return self.get_library('bullet', [os.path.join('src', '.libs', 'libBulletDynamics.a'),
-                                         os.path.join('src', '.libs', 'libBulletCollision.a'),
-                                         os.path.join('src', '.libs', 'libLinearMath.a')],
-                              configure_args=['--disable-demos','--disable-dependency-tracking'], native=native, cache_name_extra=name, env_init=env_init)
+    def lib_builder(name, native, env_init, archive_extension, target_configure_args):
+      return self.get_library('bullet', [os.path.join('src', 'BulletDynamics', 'libBulletDynamics.'+archive_extension),
+                                         os.path.join('src', 'BulletCollision', 'libBulletCollision.'+archive_extension),
+                                         os.path.join('src', 'LinearMath', 'libLinearMath.'+archive_extension)],
+				configure=['cmake'], configure_args=['-DBUILD_DEMOS=0','-DBUILD_EXTRAS=0'] + target_configure_args,
+				make_args=['LinearMath','BulletCollision','BulletDynamics'],
+				native=native, cache_name_extra=name+archive_extension, env_init=env_init)
 
     self.do_benchmark('bullet', src, '\nok.\n', shared_args=['-I' + path_from_root('tests', 'bullet', 'src'),
-                                '-I' + path_from_root('tests', 'bullet', 'Demos', 'Benchmarks')], lib_builder=lib_builder)
+                                '-I' + path_from_root('tests', 'bullet', 'Demos', 'Benchmarks'), '-DBT_USE_DOUBLE_PRECISION'], lib_builder=lib_builder)
 
   def zzz_test_zzz_lzma(self):
     src = open(path_from_root('tests', 'lzma', 'benchmark.c'), 'r').read()
