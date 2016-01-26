@@ -326,7 +326,11 @@ class CheerpBenchmarker(Benchmarker):
           dirs_to_delete += [info['dir']]
       cheerp_args = [arg for arg in cheerp_args if not arg.endswith('.a')]
       #print(cheerp_args)
-      cmd = [CHEERP_BIN + '/clang++'] + cheerp_args + [
+      if filename.endswith('.c'):
+        compiler = CHEERP_BIN + '/clang'
+      else:
+        compiler = CHEERP_BIN + '/clang++'
+      cmd = [compiler] + cheerp_args + [
         cheerp_temp,
         '-Wno-writable-strings', # for how we set up webMain
         '-o', final
