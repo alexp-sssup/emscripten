@@ -27,7 +27,11 @@ subject to the following restrictions:
 
 #define DEBUG 0
 
+#if MINIMAL_DEMO
+#define NUM_DEMOS 1
+#else
 #define NUM_DEMOS 7
+#endif
 
 extern bool gDisableDeactivation;
 
@@ -47,6 +51,7 @@ int main(int argc, char **argv) {
 	gDisableDeactivation = true;
 
 	BenchmarkDemo1 benchmarkDemo1;
+#if !MINIMAL_DEMO
 	BenchmarkDemo2 benchmarkDemo2;
 	BenchmarkDemo3 benchmarkDemo3;
 	BenchmarkDemo4 benchmarkDemo4;
@@ -57,6 +62,11 @@ int main(int argc, char **argv) {
 	BenchmarkDemo* demoArray[NUM_DEMOS] = {&benchmarkDemo1,&benchmarkDemo2,&benchmarkDemo3,&benchmarkDemo4,&benchmarkDemo5,&benchmarkDemo6,&benchmarkDemo7};
 	const char* demoNames[NUM_DEMOS] = {"3000 fall", "1000 stack", "136 ragdolls","1000 convex", "prim-trimesh", "convex-trimesh","raytests"};
 	float totalTime[NUM_DEMOS] = {0.f,0.f,0.f,0.f,0.f,0.f,0.f};
+#else
+	BenchmarkDemo* demoArray[NUM_DEMOS] = {&benchmarkDemo1,};
+	const char* demoNames[NUM_DEMOS] = {"3000 fall"};
+	float totalTime[NUM_DEMOS] = {0.f,};
+#endif
 
 #ifdef USE_GRAPHICAL_BENCHMARK
 	benchmarkDemo.initPhysics();

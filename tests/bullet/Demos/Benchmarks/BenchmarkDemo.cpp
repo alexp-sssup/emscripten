@@ -278,6 +278,7 @@ void BenchmarkDemo::clientMoveAndDisplay()
 		m_dynamicsWorld->debugDrawWorld();
 	}
 		
+#if !MINIMAL_DEMO
 	if (m_benchmark==7)
 	{
 		castRays();
@@ -285,6 +286,7 @@ void BenchmarkDemo::clientMoveAndDisplay()
 		raycastBar.draw();
 	
 	}
+#endif
 
 	renderme(); 
 
@@ -427,6 +429,7 @@ void	BenchmarkDemo::initPhysics()
 				createTest1();
 				break;
 			}
+#if !MINIMAL_DEMO
 		case 2:
 			{
 				createTest2();
@@ -457,6 +460,7 @@ void	BenchmarkDemo::initPhysics()
 			createTest7();
 			break;
 		}
+#endif
 
 
 	default:
@@ -507,6 +511,7 @@ void	BenchmarkDemo::createTest1()
 ///////////////////////////////////////////////////////////////////////////////
 // Pyramid 3
 
+#if !MINIMAL_DEMO
 void BenchmarkDemo::createWall(const btVector3& offsetPosition,int stackSize,const btVector3& boxSize)
 {
 	
@@ -1252,16 +1257,20 @@ void	BenchmarkDemo::createTest7()
 	initRays();
 }
 
+#endif
+
 void	BenchmarkDemo::exitPhysics()
 {
 	int i;
 
+#if !MINIMAL_DEMO
 	for (i=0;i<m_ragdolls.size();i++)
 	{
 		RagDoll* doll = m_ragdolls[i];
 		delete doll;
 	}
     m_ragdolls.clear();
+#endif
 
 	//cleanup in the reverse order of creation/initialization
     if (m_dynamicsWorld)

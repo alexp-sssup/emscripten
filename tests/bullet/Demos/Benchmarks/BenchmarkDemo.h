@@ -15,6 +15,7 @@ subject to the following restrictions:
 #ifndef BENCHMARK_DEMO_H
 #define BENCHMARK_DEMO_H
 
+#define MINIMAL_DEMO 0
 
 #include "LinearMath/btAlignedObjectArray.h"
 #include "LinearMath/btTransform.h"
@@ -99,6 +100,7 @@ class BenchmarkDemo : public PlatformDemoApplication
 	int	m_benchmark;
 
 	void	createTest1();
+#if !MINIMAL_DEMO
 	void	createTest2();
 	void	createTest3();
 	void	createTest4();
@@ -117,6 +119,7 @@ class BenchmarkDemo : public PlatformDemoApplication
 
 	void castRays();
 	void initRays();
+#endif
 
 	public:
 
@@ -158,6 +161,7 @@ public:
 	}
 };
 
+#if !MINIMAL_DEMO
 class BenchmarkDemo2 : public BenchmarkDemo
 {
 public:
@@ -261,6 +265,7 @@ public:
 		return demo;
 	}
 };
+#endif
 
 #endif //BENCHMARK_DEMO_H
 
