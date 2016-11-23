@@ -30,6 +30,13 @@ typedef struct {
 #endif
 #ifdef __CHEERP__
 #include <cheerp/clientlib.h>
+
+[[cheerp::genericjs]]
+double date_now()
+{
+	return client::Date::now();
+}
+
 #endif
 
 
@@ -61,7 +68,7 @@ result_t measure(clock_t *times) {
 }
 
 b2World *world;
-clock_t *times, minn = CLOCKS_PER_SEC * 1000 * 100, maxx = -1;
+clock_t *times, minn = CLOCKS_PER_SEC * 1000 * 100, maxx = 0;
 b2Body** bodies = NULL;
 int32 bodyCount = 0;
 int32 frameCounter = 0;
@@ -148,13 +155,13 @@ void iter() {
 #ifndef __CHEERP__
 	  clock_t start = clock();
 #else
-	  double start = client::Date::now() * CLOCKS_PER_SEC / 1000;
+	  double start = date_now() * CLOCKS_PER_SEC / 1000;
 #endif
 	  world->Step(1.0f/60.0f, 3, 3);
 #ifndef __CHEERP__
 	  clock_t end = clock();
 #else
-	  double end = client::Date::now() * CLOCKS_PER_SEC / 1000;
+	  double end = date_now() * CLOCKS_PER_SEC / 1000;
 #endif
     clock_t curr = end - start;
 	  times[frameCounter] = curr;
