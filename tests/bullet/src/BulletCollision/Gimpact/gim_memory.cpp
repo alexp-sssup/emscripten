@@ -82,7 +82,7 @@ gim_free_function  *gim_get_free_handler ()
   return g_freefn;
 }
 
-#ifndef __CHEERP__
+#if !defined(__CHEERP__) || defined(__ASMJS__)
 void * gim_alloc(size_t size)
 {
 	void * ptr;

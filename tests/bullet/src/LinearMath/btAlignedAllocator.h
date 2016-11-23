@@ -83,7 +83,7 @@ public:
 	const_pointer address   ( const_reference  ref ) const                           { return &ref; }
 	pointer       allocate  ( size_type        n   , const_pointer *      hint = 0 ) {
 		(void)hint;
-#ifdef __CHEERP__
+#if defined(__CHEERP__) && !defined(__ASMJS__)
 		return new value_type[n] [[noinit]];
 #else
 		return (value_type*)malloc(sizeof(value_type)*n);
@@ -91,7 +91,7 @@ public:
 	}
 	void          construct ( pointer          ptr , const value_type &   value    ) { new (ptr) value_type( value ); }
 	void          deallocate( pointer          ptr ) {
-#ifdef __CHEERP__
+#if defined(__CHEERP__) && !defined(__ASMJS__)
 		delete[] ptr;
 #else
 		free(ptr);

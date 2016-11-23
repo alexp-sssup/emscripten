@@ -19,7 +19,7 @@ subject to the following restrictions:
 
 /// This is a Hello World program for running a basic Bullet physics simulation
 
-#ifdef __CHEERP__
+#if defined(__CHEERP__) && !defined(__ASMJS__)
 void webMain()
 #else
 int main(int argc, char** argv)

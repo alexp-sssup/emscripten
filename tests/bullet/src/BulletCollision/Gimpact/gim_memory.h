@@ -126,7 +126,7 @@ void gim_free(void *ptr);
 //! SIMD INTEGER SIZE
 #define SIMD_T_SIZE sizeof(SIMD_T)
 
-#ifndef __CHEERP__
+#if !defined(__CHEERP__) || defined(__ASMJS__)
 inline void gim_simd_memcpy(void * dst, const void * src, size_t copysize)
 {
 #ifdef GIM_SIMD_MEMORY
@@ -171,7 +171,7 @@ inline void gim_swap_elements(T* _array,size_t _i,size_t _j)
 template<class T>
 inline void gim_swap_elements_memcpy(T* _array,size_t _i,size_t _j)
 {
-#ifdef __CHEERP__
+#if defined(__CHEERP__) && !defined(__ASMJS__)
 	T _e_tmp_ [[noinit]];
 #else
 	char _e_tmp_[sizeof(T)];

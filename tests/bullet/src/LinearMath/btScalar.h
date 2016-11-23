@@ -143,7 +143,7 @@ inline int	btGetVersion()
 #else
 	//non-windows systems
 
-#if (defined (__APPLE__) && defined (__i386__) && (!defined (BT_USE_DOUBLE_PRECISION)) && !defined (__CHEERP__))
+#if (defined (__APPLE__) && defined (__i386__) && (!defined (BT_USE_DOUBLE_PRECISION)) && (!defined (__CHEERP__)||defined(__ASMJS__)))
 	#define BT_USE_SSE
 	#include <emmintrin.h>
 
@@ -212,7 +212,7 @@ typedef float btScalar;
 
 
 
-#ifdef __CHEERP__
+#if defined(__CHEERP__) && !defined(__ASMJS__)
 #define BT_DECLARE_ALIGNED_ALLOCATOR()
 #else
 #define BT_DECLARE_ALIGNED_ALLOCATOR() \

@@ -19,7 +19,7 @@ int gNumAlignedAllocs = 0;
 int gNumAlignedFree = 0;
 int gTotalBytesAlignedAllocs = 0;//detect memory leaks
 
-#ifndef __CHEERP__
+#if !defined(__CHEERP__) || defined(__ASMJS__)
 static void *btAllocDefault(size_t size)
 {
 	return malloc(size);
@@ -31,7 +31,7 @@ static void btFreeDefault(void *ptr)
 	free(ptr);
 }
 
-#ifndef __CHEERP__
+#if !defined(__CHEERP__) || defined(__ASMJS__)
 static btAllocFunc *sAllocFunc = btAllocDefault;
 #else
 static btAllocFunc *sAllocFunc = NULL;
@@ -96,7 +96,7 @@ static inline void btAlignedFreeDefault(void *ptr)
 static btAlignedAllocFunc *sAlignedAllocFunc = btAlignedAllocDefault;
 static btAlignedFreeFunc *sAlignedFreeFunc = btAlignedFreeDefault;
 
-#ifndef __CHEERP__
+#if !defined(__CHEERP__) || defined(__ASMJS__)
 void btAlignedAllocSetCustomAligned(btAlignedAllocFunc *allocFunc, btAlignedFreeFunc *freeFunc)
 {
   sAlignedAllocFunc = allocFunc ? allocFunc : btAlignedAllocDefault;

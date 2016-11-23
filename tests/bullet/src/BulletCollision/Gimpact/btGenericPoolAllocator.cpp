@@ -262,7 +262,7 @@ public:
 // global allocator
 GIM_STANDARD_ALLOCATOR g_main_allocator;
 
-#ifndef __CHEERP__
+#if !defined(__CHEERP__) || defined(__ASMJS__)
 void * btPoolAlloc(size_t size)
 {
 	return g_main_allocator.allocate(size);

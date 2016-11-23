@@ -54,6 +54,13 @@ static btClock gProfileClock;
 
 #ifdef __CHEERP__
 #include <cheerp/clientlib.h>
+
+[[cheerp::genericjs]]
+double date_now()
+{
+	return client::Date::now();
+}
+
 #endif
 
 #define mymin(a,b) (a > b ? a : b)
@@ -125,7 +132,7 @@ void btClock::reset()
 	m_data->mStartTime = newTime;
 #else
 #ifdef __CHEERP__
-	m_data->mStartTime=client::Date::now();
+	m_data->mStartTime=date_now();
 #else
 	gettimeofday(&m_data->mStartTime, 0);
 #endif
@@ -181,7 +188,7 @@ unsigned long int btClock::getTimeMilliseconds()
 		return (unsigned long int)((double(newTime-m_data->mStartTime)) / dFreq);
 #else
 #ifdef __CHEERP__
-		double currentTime=client::Date::now();
+		double currentTime=date_now();
 		return currentTime-m_data->mStartTime;
 #else
 		struct timeval currentTime;
@@ -243,7 +250,7 @@ unsigned long int btClock::getTimeMicroseconds()
 		return (unsigned long int)((double(newTime-m_data->mStartTime)) / dFreq);
 #else
 #ifdef __CHEERP__
-		double currentTime=client::Date::now();
+		double currentTime=date_now();
 		return (currentTime-m_data->mStartTime) * 1000;
 #else
 		struct timeval currentTime;
