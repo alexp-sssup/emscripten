@@ -39,8 +39,18 @@ static btAllocFunc *sAllocFunc = NULL;
 static btFreeFunc *sFreeFunc = btFreeDefault;
 
 
+#if 1
+#include <malloc.h>
+static void *btAlignedAllocDefault(size_t size, int alignment)
+{
+	return sAllocFunc(size);
+}
 
-#if defined (BT_HAS_ALIGNED_ALLOCATOR)
+static void btAlignedFreeDefault(void *ptr)
+{
+	sFreeFunc(ptr);
+}
+#elif defined (BT_HAS_ALIGNED_ALLOCATOR)
 #include <malloc.h>
 static void *btAlignedAllocDefault(size_t size, int alignment)
 {

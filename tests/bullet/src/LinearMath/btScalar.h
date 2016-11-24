@@ -212,7 +212,7 @@ typedef float btScalar;
 
 
 
-#if defined(__CHEERP__) && !defined(__ASMJS__)
+#if 1
 #define BT_DECLARE_ALIGNED_ALLOCATOR()
 #else
 #define BT_DECLARE_ALIGNED_ALLOCATOR() \
