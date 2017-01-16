@@ -704,6 +704,7 @@ class benchmark(RunnerCore):
     self.do_benchmark('ifs', src, 'ok', reps=TEST_REPS)
 
   def test_conditionals(self):
+    if CORE_BENCHMARKS: return
     src = r'''
       #include <stdio.h>
       #include <stdlib.h>
@@ -998,7 +999,6 @@ class benchmark(RunnerCore):
     self.lua('binarytrees', 'long lived tree of depth')
 
   def test_zzz_zlib(self):
-    if CORE_BENCHMARKS: return
     src = open(path_from_root('tests', 'zlib', 'benchmark.c'), 'r').read()
     def lib_builder(name, native, env_init, archive_extension, target_configure_args):
       return self.get_library('zlib', os.path.join('libz.'+archive_extension), make_args=['libz.'+archive_extension], native=native, cache_name_extra=name+archive_extension, env_init=env_init)
