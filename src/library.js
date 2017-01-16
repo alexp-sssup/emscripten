@@ -1922,8 +1922,8 @@ LibraryManager.library = {
 
 #if USE_STARTUP_PERFORMANCE
   performance_now: function() {
-    var ret = __performance_now()|0;
-    {{{ 'HEAP32[((TOTAL_MEMORY - 4)>>2)]=ret' }}};
+    var ret = __performance_now();
+    {{{ 'HEAPF64[((TOTAL_MEMORY - 8)>>3)]=ret' }}};
     return ret;
   },
 #endif

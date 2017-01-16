@@ -207,7 +207,7 @@ Module['callMain'] = function callMain(args) {
     Module.realPrint('main() took ' + (Date.now() - start) + ' milliseconds');
 #endif
 #if USE_STARTUP_PERFORMANCE
-    var duration = (HEAP32[(TOTAL_MEMORY - 4) >> 2]) - __performance_start_time;
+    var duration = (HEAPF64[(TOTAL_MEMORY - 8) >> 3]) - __performance_start_time;
     Module.print('main() called after ' + duration + ' milliseconds');
 #endif
 
