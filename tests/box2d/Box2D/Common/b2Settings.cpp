@@ -23,6 +23,7 @@
 
 b2Version b2_version = {2, 2, 1};
 
+#ifndef __CHEERP__
 // Memory allocators. Modify these to use your own allocator.
 void* b2Alloc(int32 size)
 {
@@ -33,6 +34,7 @@ void b2Free(void* mem)
 {
 	free(mem);
 }
+#endif
 
 // You can modify this to use your logging facility.
 void b2Log(const char* string, ...)
