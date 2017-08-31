@@ -31,5 +31,8 @@ print('engine,' + ','.join(bench_names))
 for e, engine_name in enumerate(engine_names):
     row = engine_name
     for bench_name in bench_names:
-        row += ',' + grid[bench_name][e]
+        if not grid[bench_name]:
+            row += ',0.0'
+        else:
+            row += ',' + grid[bench_name][e]
     print(row)
