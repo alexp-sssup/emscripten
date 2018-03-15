@@ -2,12 +2,14 @@
 
 namespace client
 {
-	class Module
+	class [[cheerp::genericjs]] Module
 	{
 	public:
 		Array* get_preRun();
 		Array* get_postRun();
 	};
+
+	[[cheerp::genericjs]]
 	extern Module* Module;
 }
 
