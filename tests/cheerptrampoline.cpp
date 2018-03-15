@@ -29,7 +29,7 @@ void webMain()
 			reinterpret_cast<void(*)()>(preRun[i])();
 	}
 #endif
-	main(2, a);
+	volatile int exit_code = main(2, a);
 #if EMBENCHEN
 	if(client::Module->get_postRun())
 	{
