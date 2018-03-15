@@ -304,7 +304,7 @@ voidpf ZLIB_INTERNAL zcalloc (opaque, items, size)
     unsigned items;
     unsigned size;
 {
-#ifdef __CHEERP__
+#if __CHEERP__ && !__ASMJS__
     abort();
 #else
     if (opaque) items += size - size; /* make compiler happy */

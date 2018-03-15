@@ -211,7 +211,7 @@ typedef struct internal_state {
     /* Depth of each subtree used as tie breaker for trees of equal frequency
      */
 
-#ifdef __CHEERP__
+#if __CHEERP__ && !__ASMJS__
     ushf *l_buf;          /* buffer for literals or lengths */
 #else
     uchf *l_buf;          /* buffer for literals or lengths */

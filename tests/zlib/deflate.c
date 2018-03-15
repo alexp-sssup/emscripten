@@ -192,7 +192,7 @@ struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
  * Initialize the hash table (avoiding 64K overflow for 16 bit systems).
  * prev[] will be initialized on the fly.
  */
-#if __CHEERP__
+#if __CHEERP__ && !__ASMJS__
 #define CLEAR_HASH(s) \
     s->head[s->hash_size-1] = NIL; \
     zmemzero(s->head, (unsigned)(s->hash_size-1)*sizeof(*s->head));
@@ -295,7 +295,7 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
 
     s->lit_bufsize = 1 << (memLevel + 6); /* 16K elements by default */
 
-#ifdef __CHEERP__
+#if defined(__CHEERP__) && !__ASMJS__
     overlay = (ushf *) ZALLOC(strm, 3 * s->lit_bufsize, sizeof(ush));
     s->pending_buf = (char *) overlay;
     s->pending_buf_size = (ulg) (3 * s->lit_bufsize * sizeof(ush));
@@ -313,7 +313,7 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
         return Z_MEM_ERROR;
     }
 
-#ifdef __CHEERP__
+#if defined(__CHEERP__) && !__ASMJS__
     s->d_buf = overlay + s->lit_bufsize;
     s->l_buf = s->d_buf + s->lit_bufsize;
 #else
