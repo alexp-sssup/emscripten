@@ -27,6 +27,9 @@ subject to the following restrictions:
 
 #define DEBUG 0
 
+// Disable printing to stdout for Cheerp and Emscripten.
+#define printf(fmt, ...) (0)
+
 #if MINIMAL_DEMO
 #define NUM_DEMOS 1
 #else

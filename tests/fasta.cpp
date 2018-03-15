@@ -13,13 +13,13 @@ void puts_limited(char *x)
   static int left = 550;
   int len = strlen(x);
   if (len <= left) {
-    puts(x);
+    //puts(x);
     left -= len;
     return;
   }
   if (left > 0) {
     x[left] = '\0';
-    puts(x);
+    //puts(x);
     x[left] = 'z';
     left = 0;
   }

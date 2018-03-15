@@ -12,6 +12,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+// Disable printing to stdout for Cheerp and Emscripten.
+#define printf(fmt, ...) (0)
+
 struct worker_args {
    int i, n;
    struct worker_args *next;
@@ -144,6 +147,8 @@ fannkuch(int n)
    return maxflips;
 }
 
+volatile int result_glob;
+
 int
 main(int argc, char **argv)
 {
@@ -153,7 +158,8 @@ main(int argc, char **argv)
       printf("Wrong argument.\n");
       return 1;
    }
-   printf("Pfannkuchen(%d) = %d.\n", n, fannkuch(n));
+   //printf("Pfannkuchen(%d) = %d.\n", n, fannkuch(n));
+   result_glob = fannkuch(n);
    return 0;
 }
 

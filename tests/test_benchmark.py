@@ -505,7 +505,7 @@ class benchmark(RunnerCore):
           case 3: arg = 220000; break;
           case 4: arg = 610000; break;
           case 5: arg = 1010000; break;
-          default: printf("error: %d\\n", arg); return -1;
+          default: /*printf("error: %d\\n", arg);*/ return -1;
         }
 
         int primes = 0, curri = 2;
@@ -522,8 +522,8 @@ class benchmark(RunnerCore):
           }
           curri++;
         }
-        printf("lastprime: %d.\n", curri-1);
-        return 0;
+        /*printf("lastprime: %d.\n", curri-1);
+        return 0;*/return curri-1;
       }
     '''
     self.do_benchmark('primes', src, 'lastprime:')
@@ -543,7 +543,7 @@ class benchmark(RunnerCore):
           case 3: N = 1024*1024; M = 800; break;
           case 4: N = 1024*1024; M = 4000; break;
           case 5: N = 1024*1024; M = 8000; break;
-          default: printf("error: %d\\n", arg); return -1;
+          default: /*printf("error: %d\\n", arg);*/ return -1;
         }
 
         int final = 0;
@@ -555,8 +555,8 @@ class benchmark(RunnerCore):
             final += buf[i] & 1;
           final = final % 1000;
         }
-        printf("final: %d.\\n", final);
-        return 0;
+        /*printf("final: %d.\\n", final);
+        return 0;*/return final;
       }
     '''
     self.do_benchmark('memops', src, 'final:')
@@ -607,6 +607,7 @@ class benchmark(RunnerCore):
   def test_copy(self):
     src = r'''
       #include <stdio.h>
+      volatile int total_glob;
       struct vec {
         int x, y, z;
         int r, g, b;
@@ -633,7 +634,7 @@ class benchmark(RunnerCore):
           case 3: arg = 1250; break;
           case 4: arg = 5*1250; break;
           case 5: arg = 10*1250; break;
-          default: printf("error: %d\\n", arg); return -1;
+          default: /*printf("error: %d\\n", arg);*/ return -1;
         }
 
         int total = 0;
@@ -652,7 +653,7 @@ class benchmark(RunnerCore):
             total %= 10240;
           }
         }
-        printf("sum:%d\n", total);
+        /*printf("sum:%d\n", total);*/total_glob = total;
         return 0;
       }
     '''
@@ -664,6 +665,7 @@ class benchmark(RunnerCore):
       #include <stdlib.h>
 
       volatile int x = 0;
+      volatile int sum_glob;
 
       __attribute__ ((noinline)) int calc() {
         return (x++) & 16384;
@@ -678,7 +680,7 @@ class benchmark(RunnerCore):
           case 3: arg = 1250; break;
           case 4: arg = 5*1250; break;
           case 5: arg = 10*1250; break;
-          default: printf("error: %d\\n", arg); return -1;
+          default: /*printf("error: %d\\n", arg);*/ return -1;
         }
 
         int sum = 0;
@@ -696,7 +698,8 @@ class benchmark(RunnerCore):
           }
         }
 
-        printf("ok\n");
+        //printf("ok\n");
+        sum_glob = sum;
 
         return sum;
       }
@@ -708,6 +711,7 @@ class benchmark(RunnerCore):
     src = r'''
       #include <stdio.h>
       #include <stdlib.h>
+      volatile int x_glob;
 
       int main(int argc, char *argv[]) {
         int arg = argc > 1 ? argv[1][0] - '0' : 3;
@@ -718,7 +722,7 @@ class benchmark(RunnerCore):
           case 3: arg = 3*1250; break;
           case 4: arg = 3*5*1250; break;
           case 5: arg = 3*10*1250; break;
-          default: printf("error: %d\\n", arg); return -1;
+          default: /*printf("error: %d\\n", arg);*/ return -1;
         }
 
         int x = 0;
@@ -733,7 +737,8 @@ class benchmark(RunnerCore):
           }
         }
 
-        printf("ok %d\n", x);
+        //printf("ok %d\n", x);
+        x_glob = x;
 
         return x;
       }
@@ -753,7 +758,7 @@ class benchmark(RunnerCore):
           case 3: n = 11; break;
           case 4: n = 11; break;
           case 5: n = 12; break;
-          default: printf("error: %d\\n", arg); return -1;
+          default: /*printf("error: %d\\n", arg);*/ return -1;
         }
       '''
     )
@@ -764,6 +769,7 @@ class benchmark(RunnerCore):
     src = r'''
       #include <stdio.h>
       #include <math.h>
+      volatile int f_glob, s_glob;
       int main(int argc, char **argv) {
         int N, M;
         int arg = argc > 1 ? argv[1][0] - '0' : 3;
@@ -774,7 +780,7 @@ class benchmark(RunnerCore):
           case 3: N = 20000; M = 7000; break;
           case 4: N = 20000; M = 5*7000; break;
           case 5: N = 20000; M = 10*7000; break;
-          default: printf("error: %d\\n", arg); return -1;
+          default: /*printf("error: %d\\n", arg);*/ return -1;
         }
 
         unsigned int f = 0;
@@ -787,7 +793,9 @@ class benchmark(RunnerCore):
             s += (short(f)*short(f)) % 256;
           }
         }
-        printf("final: %d:%d.\n", f, s);
+        //printf("final: %d:%d.\n", f, s);
+        f_glob = f;
+        s_glob = s;
         return 0;
       }
     '''
@@ -839,7 +847,7 @@ class benchmark(RunnerCore):
         case 3: n = 19000000; break;
         case 4: n = 19000000*5; break;
         case 5: n = 19000000*10; break;
-        default: printf("error: %d\\n", arg); return -1;
+        default: /*printf("error: %d\\n", arg);*/ return -1;
       }
     ''')
     assert 'switch(arg)' in src

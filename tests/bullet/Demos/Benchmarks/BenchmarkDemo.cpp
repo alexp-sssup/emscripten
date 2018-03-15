@@ -48,6 +48,8 @@ subject to the following restrictions:
 #include "BulletMultiThreaded/btParallelConstraintSolver.h"
 
 
+// Disable printing to stdout for Cheerp and Emscripten.
+#define printf(fmt, ...) (0)
 
 
 btThreadSupportInterface* createSolverThreadSupport(int maxNumThreads)

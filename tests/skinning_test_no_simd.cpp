@@ -169,6 +169,8 @@ void calculateVerticesAndNormals_x87(
   }
 }
 
+volatile int sum_glob;
+
 int main (int argc, char*argv[])
 {
   int N, M;
@@ -180,7 +182,7 @@ int main (int argc, char*argv[])
     case 3: N = 9500; M = 10000; break;
     case 4: N = 2*11000; M = 2*12000; break;
     case 5: N = 3*10000; M = 3*10800; break;
-    default: printf("error: %d\\n", arg); return -1;
+    default: /*printf("error: %d\\n", arg);*/ return -1;
   }
 
   Vertex *v = new Vertex[N];
@@ -206,6 +208,7 @@ int main (int argc, char*argv[])
     sum += (output[j].x + output[j].y + output[j].z + output[j].w);
   }
 
-  printf("blah=%f\n", sum);
+  //printf("blah=%f\n", sum);
+  sum_glob = sum;
 }
 

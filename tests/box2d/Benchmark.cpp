@@ -39,6 +39,9 @@ double date_now()
 
 #endif
 
+// Disable printing to stdout for Cheerp and Emscripten.
+#define printf(fmt, ...) (0)
+
 
 #include "Box2D/Box2D.h"
 

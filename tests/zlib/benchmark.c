@@ -18,7 +18,7 @@ void __attribute__ ((noinline)) doit(unsigned char *buffer, int size, int i) {
   unsigned long compressedSize = maxCompressedSize;
   int err = compress(buffer2, &compressedSize, buffer, size);
   if (err) abort();
-  if (i == 0) printf("sizes: %d,%d\n", size, (int)compressedSize);
+  //if (i == 0) printf("sizes: %d,%d\n", size, (int)compressedSize);
 
   unsigned long decompressedSize = size;
   err = uncompress(buffer3, &decompressedSize, buffer2, compressedSize);
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
     case 3: size = 100000; iters = 500; break;
     case 4: size = 100000; iters = 5*500; break;
     case 5: size = 100000; iters = 10*500; break;
-    default: printf("error: %d\\n", arg); return -1;
+    default: /*printf("error: %d\\n", arg);*/ return -1;
   }
 
   unsigned char *buffer = (unsigned char*)malloc(size);
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
     doit(buffer, size, i);
   }
 
-  printf("ok.\n");
+  //printf("ok.\n");
 
   return 0;
 }
