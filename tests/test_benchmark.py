@@ -251,16 +251,14 @@ class CheerpBenchmarker(Benchmarker):
       }
     open(cheerp_temp, 'w').write('''
       %(code)s
-      void webMain() {
-        // TODO: how to read from commandline?
-        volatile int argc = 2;
-        typedef char** charStarStar;
-        volatile charStarStar argv;
-        argv[0] = "./cheerp.exe";
-        argv[1] = "%(arg)s";
-        main(%(main_args)s);
-      }
-    ''' % {
+void webMain() {
+    const char* args[2];
+    args[0]="benchmark";
+    args[1]="%(arg)s";
+    int argc = 2;
+    const char** argv=&args[0];
+    volatile int exit_code = main(%(main_args)s);
+}\n''' % {
       'arg': args[-1],
       'code': code,
       'main_args': main_args
