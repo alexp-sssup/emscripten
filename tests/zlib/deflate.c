@@ -151,8 +151,10 @@ local const config configuration_table[10] = {
 #define EQUAL 0
 /* result of memcmp for equal strings */
 
+#ifndef __CHEERP__
 #ifndef NO_DUMMY_DECL
 struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
+#endif
 #endif
 
 /* ===========================================================================
@@ -190,9 +192,15 @@ struct static_tree_desc_s {int dummy;}; /* for buggy compilers */
  * Initialize the hash table (avoiding 64K overflow for 16 bit systems).
  * prev[] will be initialized on the fly.
  */
+#if __CHEERP__
+#define CLEAR_HASH(s) \
+    s->head[s->hash_size-1] = NIL; \
+    zmemzero(s->head, (unsigned)(s->hash_size-1)*sizeof(*s->head));
+#else
 #define CLEAR_HASH(s) \
     s->head[s->hash_size-1] = NIL; \
     zmemzero((Bytef *)s->head, (unsigned)(s->hash_size-1)*sizeof(*s->head));
+#endif
 
 /* ========================================================================= */
 int ZEXPORT deflateInit_(strm, level, version, stream_size)
@@ -287,9 +295,15 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
 
     s->lit_bufsize = 1 << (memLevel + 6); /* 16K elements by default */
 
+#ifdef __CHEERP__
+    overlay = (ushf *) ZALLOC(strm, 3 * s->lit_bufsize, sizeof(ush));
+    s->pending_buf = (char *) overlay;
+    s->pending_buf_size = (ulg) (3 * s->lit_bufsize * sizeof(ush));
+#else
     overlay = (ushf *) ZALLOC(strm, s->lit_bufsize, sizeof(ush)+2);
     s->pending_buf = (uchf *) overlay;
     s->pending_buf_size = (ulg)s->lit_bufsize * (sizeof(ush)+2L);
+#endif
 
     if (s->window == Z_NULL || s->prev == Z_NULL || s->head == Z_NULL ||
         s->pending_buf == Z_NULL) {
@@ -298,8 +312,14 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
         deflateEnd (strm);
         return Z_MEM_ERROR;
     }
+
+#ifdef __CHEERP__
+    s->d_buf = overlay + s->lit_bufsize;
+    s->l_buf = s->d_buf + s->lit_bufsize;
+#else
     s->d_buf = overlay + s->lit_bufsize/sizeof(ush);
     s->l_buf = s->pending_buf + (1+sizeof(ush))*s->lit_bufsize;
+#endif
 
     s->level = level;
     s->strategy = strategy;
@@ -973,6 +993,10 @@ int ZEXPORT deflateCopy (dest, source)
     zmemcpy(ds->pending_buf, ss->pending_buf, (uInt)ds->pending_buf_size);
 
     ds->pending_out = ds->pending_buf + (ss->pending_out - ss->pending_buf);
+#if __CHEERP
+    // TODO: statements below do not work in Cheerp
+    abort();
+#endif
     ds->d_buf = overlay + ds->lit_bufsize/sizeof(ush);
     ds->l_buf = ds->pending_buf + (1+sizeof(ush))*ds->lit_bufsize;
 

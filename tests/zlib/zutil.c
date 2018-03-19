@@ -7,8 +7,10 @@
 
 #include "zutil.h"
 
+#ifndef __CHEERP__
 #ifndef NO_DUMMY_DECL
 struct internal_state      {int dummy;}; /* for buggy compilers */
+#endif
 #endif
 
 const char * const z_errmsg[10] = {
@@ -302,9 +304,13 @@ voidpf ZLIB_INTERNAL zcalloc (opaque, items, size)
     unsigned items;
     unsigned size;
 {
+#ifdef __CHEERP__
+    abort();
+#else
     if (opaque) items += size - size; /* make compiler happy */
     return sizeof(uInt) > 2 ? (voidpf)malloc(items * size) :
                               (voidpf)calloc(items, size);
+#endif
 }
 
 void ZLIB_INTERNAL zcfree (opaque, ptr)

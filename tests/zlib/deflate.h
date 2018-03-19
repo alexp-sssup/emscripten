@@ -64,7 +64,7 @@ typedef struct ct_data_s {
         ush  freq;       /* frequency count */
         ush  code;       /* bit string */
     } fc;
-    union {
+    union dl_t {
         ush  dad;        /* father node in Huffman tree */
         ush  len;        /* length of bit string */
     } dl;
@@ -211,7 +211,12 @@ typedef struct internal_state {
     /* Depth of each subtree used as tie breaker for trees of equal frequency
      */
 
+#ifdef __CHEERP__
+    ushf *l_buf;          /* buffer for literals or lengths */
+#else
     uchf *l_buf;          /* buffer for literals or lengths */
+#endif
+
 
     uInt  lit_bufsize;
     /* Size of match buffer for literals/lengths.  There are 4 reasons for

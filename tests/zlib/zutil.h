@@ -266,9 +266,14 @@ voidpf ZLIB_INTERNAL zcalloc OF((voidpf opaque, unsigned items,
                         unsigned size));
 void ZLIB_INTERNAL zcfree  OF((voidpf opaque, voidpf ptr));
 
+#ifdef __CHEERP__
+#define ZALLOC(strm, items, size) malloc((items) * (size))
+#define ZFREE(strm, addr)  free((voidpf)(addr))
+#else
 #define ZALLOC(strm, items, size) \
            (*((strm)->zalloc))((strm)->opaque, (items), (size))
 #define ZFREE(strm, addr)  (*((strm)->zfree))((strm)->opaque, (voidpf)(addr))
+#endif
 #define TRY_FREE(s, p) {if (p) ZFREE(s, p);}
 
 #endif /* ZUTIL_H */

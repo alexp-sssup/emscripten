@@ -1232,7 +1232,7 @@ ZEXTERN int ZEXPORT gzsetparams OF((gzFile file, int level, int strategy));
    opened for writing.
 */
 
-ZEXTERN int ZEXPORT gzread OF((gzFile file, voidp buf, unsigned len));
+ZEXTERN int ZEXPORT gzread OF((gzFile file, unsigned char *buf, unsigned len));
 /*
      Reads the given number of uncompressed bytes from the compressed file.  If
    the input file was not in gzip format, gzread copies the given number of
@@ -1249,7 +1249,7 @@ ZEXTERN int ZEXPORT gzread OF((gzFile file, voidp buf, unsigned len));
 */
 
 ZEXTERN int ZEXPORT gzwrite OF((gzFile file,
-                                voidpc buf, unsigned len));
+                                const unsigned char *buf, unsigned len));
 /*
      Writes the given number of uncompressed bytes into the compressed file.
    gzwrite returns the number of uncompressed bytes written or 0 in case of
@@ -1596,8 +1596,10 @@ ZEXTERN int ZEXPORT inflateBackInit_ OF((z_streamp strm, int windowBits,
 #endif
 
 /* hack for buggy compilers */
+#ifndef __CHEERP__
 #if !defined(ZUTIL_H) && !defined(NO_DUMMY_DECL)
     struct internal_state {int dummy;};
+#endif
 #endif
 
 /* undocumented functions */

@@ -16,11 +16,13 @@ void __attribute__ ((noinline)) doit(unsigned char *buffer, int size, int i) {
   if (!buffer3) buffer3 = (unsigned char*)malloc(size);
 
   unsigned long compressedSize = maxCompressedSize;
-  compress(buffer2, &compressedSize, buffer, size);
+  int err = compress(buffer2, &compressedSize, buffer, size);
+  if (err) abort();
   if (i == 0) printf("sizes: %d,%d\n", size, (int)compressedSize);
 
   unsigned long decompressedSize = size;
-  uncompress(buffer3, &decompressedSize, buffer2, (int)compressedSize);
+  err = uncompress(buffer3, &decompressedSize, buffer2, compressedSize);
+  if (err) abort();
   assert(decompressedSize == size);
   if (i == 0) assert(strcmp((char*)buffer, (char*)buffer3) == 0);
 }

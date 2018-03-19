@@ -23,6 +23,8 @@ CFLAGS=-O
 #CFLAGS=-g -DDEBUG
 #CFLAGS=-O3 -Wall -Wwrite-strings -Wpointer-arith -Wconversion \
 #           -Wstrict-prototypes -Wmissing-prototypes
+#libz.a: CFLAGS += -g -fsanitize=address
+CFLAGS+=-g  # needed for source maps
 
 SFLAGS=-O
 LDFLAGS=
@@ -106,6 +108,9 @@ test64: all64
 	  echo '		*** zlib 64-bit test FAILED ***'; false; \
 	fi
 	-@rm -f foo.gz
+
+libz.bc: $(OBJS)
+	$(LLVMLINK) $^ -o $@
 
 libz.a: $(OBJS)
 	$(AR) $@ $(OBJS)
