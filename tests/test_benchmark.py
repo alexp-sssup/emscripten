@@ -260,12 +260,13 @@ class CheerpBenchmarker(Benchmarker):
         'CXX': CHEERP_BIN + '/clang++',
         'AR': CHEERP_BIN + '/llvm-ar',
         'LD': CHEERP_BIN + '/clang',
+        'LLVMLINK': CHEERP_BIN + '/llvm-link',
         'NM': CHEERP_BIN + '/llvm-nm',
         'LDSHARED': CHEERP_BIN + '/clang',
         'RANLIB': CHEERP_BIN + '/llvm-ranlib',
         'CFLAGS': ' '.join(cheerp_args),
         'CXXFLAGS': ' '.join(cheerp_args),
-      })
+      }, archive_extension="bc", target_configure_args=[])
     final = os.path.dirname(filename) + os.path.sep + 'cheerp_' + self.name + ('_' if self.name else '') + os.path.basename(filename) + '.js'
     final = final.replace('.cpp', '')
     try_delete(final)
@@ -383,9 +384,9 @@ try:
     ]
   if V8_ENGINE and Building.which(V8_ENGINE[0]):
     benchmarkers += [
-      #EmscriptenBenchmarker('v8', V8_ENGINE, []),
+      EmscriptenBenchmarker('v8', V8_ENGINE, []),
       EmscriptenBenchmarker('v8-asmjs', V8_ENGINE, ['-s', 'PRECISE_F32=2']),
-      #EmscriptenBenchmarker('v8-wasm',  V8_ENGINE,           ['-s', 'WASM=1']),
+      EmscriptenBenchmarker('v8-wasm',  V8_ENGINE,           ['-s', 'WASM=1']),
       CheerpBenchmarker('v8', V8_ENGINE),
       CheerpBenchmarker('v8-asmjs',  V8_ENGINE),
       CheerpBenchmarker('v8-wasm',  V8_ENGINE),
