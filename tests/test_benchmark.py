@@ -68,7 +68,7 @@ class Benchmarker(object):
     sorted_times.sort()
     median = sum(sorted_times[len(sorted_times)//2 - 1:len(sorted_times)//2 + 1])/2
 
-    print('   %10s: mean: %4.3f (+-%4.3f) secs  median: %4.3f  range: %4.3f-%4.3f  (noise: %4.3f%%)  (%d runs)' % (self.name, mean, std, median, min(self.times), max(self.times), 100*std/mean, self.reps), end=' ')
+    print('   %20s: mean: %4.3f (+-%4.3f) secs  median: %4.3f  range: %4.3f-%4.3f  (noise: %4.3f%%)  (%d runs)' % (self.name, mean, std, median, min(self.times), max(self.times), 100*std/mean, self.reps), end=' ')
 
     if baseline:
       mean_baseline = sum(baseline.times)/len(baseline.times)
@@ -145,7 +145,7 @@ def run_binaryen_opts(filename, opts):
 
 class EmscriptenBenchmarker(Benchmarker):
   def __init__(self, name, engine, extra_args=[], env={}, binaryen_opts=[]):
-    self.name = name
+    self.name = 'emscripten-' + name
     self.engine = engine
     self.extra_args = extra_args[:]
 
@@ -231,7 +231,7 @@ CHEERP_BIN = os.getenv('CHEERP_BIN', '/opt/cheerp/bin')
 
 class CheerpBenchmarker(Benchmarker):
   def __init__(self, name, engine, args=[OPTIMIZATIONS], binaryen_opts=[]):
-    self.name = name
+    self.name = 'cheerp-' + name
     self.engine = engine
     self.args = args[:]
     self.binaryen_opts = binaryen_opts[:]
@@ -297,7 +297,7 @@ class CheerpBenchmarker(Benchmarker):
         'CFLAGS': ' '.join(cheerp_args),
         'CXXFLAGS': ' '.join(cheerp_args),
       }, archive_extension="bc", target_configure_args=[])
-    final = os.path.dirname(filename) + os.path.sep + 'cheerp_' + self.name + ('_' if self.name else '') + os.path.basename(filename) + '.js'
+    final = os.path.dirname(filename) + os.path.sep + self.name + ('_' if self.name else '') + os.path.basename(filename) + '.js'
     final = final.replace('.cpp', '')
     try_delete(final)
     dirs_to_delete = []
